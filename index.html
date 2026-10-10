@@ -271,6 +271,18 @@ let budget = Number(localStorage.getItem("ss-budget")||250);
 let drops = JSON.parse(localStorage.getItem("ss-drops")||"{}");
 
 function toast(m){const el=document.getElementById("toast");el.textContent=m;el.classList.add("on");setTimeout(()=>el.classList.remove("on"),2000)}
+function notify(title, body){
+  toast(body || title);
+  if(window.Notification && Notification.permission==="granted"){
+    try { new Notification(title, {body: body||title, icon: ""}); } catch(e){}
+  }
+}
+async function enablePush(){
+  if(!window.Notification){ toast("Notifications not supported in this browser"); return; }
+  const perm = await Notification.requestPermission();
+  if(perm==="granted"){ notify("ShelfSignal", "Push notifications are on"); }
+  else toast("Notifications blocked");
+}
 function save(){localStorage.setItem("ss-lists",JSON.stringify(lists));localStorage.setItem("ss-active",activeList||"");localStorage.setItem("ss-claims",JSON.stringify(claims));localStorage.setItem("ss-budget",budget);localStorage.setItem("ss-drops",JSON.stringify(drops))}
 
 function visibleToys(){
@@ -446,7 +458,7 @@ function setDrop(id){
   if(val===null) return;
   const n=Number(val);
   if(!n||n<=0){ delete drops[id]; toast("Drop alert cleared"); }
-  else { drops[id]=n; toast("Drop alert set at $"+n); }
+  else { drops[id]=n; notify("Drop alert set", t.name+" at $"+n); }
   save(); openToy(id);
 }
 function checkDrops(){
@@ -456,14 +468,15 @@ function checkDrops(){
   });
   if(hit.length){
     const names=hit.map(([id])=>toys.find(t=>t.id===id).name).join(", ");
-    toast("Price drop: "+names);
+    notify("Price drop", names);
   }
 }
 function openAlert(){
   document.getElementById("drawer").innerHTML=`
     <div class="row"><div class="kicker">Alerts</div><button class="btn btn-ghost" onclick="closeDrawer()">Close</button></div>
     <h2>Free daily, or text first.</h2>
-    <form class="form" onsubmit="event.preventDefault();toast('Saved on this device');closeDrawer()">
+    <button class="btn btn-copper" style="width:100%;margin-bottom:12px" onclick="enablePush()">Enable push notifications</button>
+    <form class="form" onsubmit="event.preventDefault();notify('Alert saved','We will notify you on this device');closeDrawer()">
       <input required type="email" placeholder="Email" />
       <input type="tel" placeholder="Mobile for Pass SMS" />
       <select><option>Any Hot list tightening</option>${toys.filter(t=>t.status==="hot").map(t=>`<option>${t.name}</option>`).join("")}</select>
