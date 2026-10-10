@@ -280,8 +280,17 @@ function notify(title, body){
 async function enablePush(){
   if(!window.Notification){ toast("Notifications not supported in this browser"); return; }
   const perm = await Notification.requestPermission();
-  if(perm==="granted"){ notify("ShelfSignal", "Push notifications are on"); }
-  else toast("Notifications blocked");
+  if(perm!=="granted"){ toast("Notifications blocked"); return; }
+  if(!("serviceWorker" in navigator)){ notify("ShelfSignal", "Notifications on (no service worker)"); return; }
+  try {
+    const reg = await navigator.serviceWorker.register("sw.js");
+    await navigator.serviceWorker.ready;
+    notify("ShelfSignal", "Background push ready");
+    // Demo: ask the service worker to show a notification even if this tab is in the background
+    if(reg.active) reg.active.postMessage({type:"demo", title:"ShelfSignal", body:"Background channel is live"});
+  } catch(e){
+    notify("ShelfSignal", "Notifications on; service worker failed");
+  }
 }
 function save(){localStorage.setItem("ss-lists",JSON.stringify(lists));localStorage.setItem("ss-active",activeList||"");localStorage.setItem("ss-claims",JSON.stringify(claims));localStorage.setItem("ss-budget",budget);localStorage.setItem("ss-drops",JSON.stringify(drops))}
 
@@ -475,7 +484,7 @@ function openAlert(){
   document.getElementById("drawer").innerHTML=`
     <div class="row"><div class="kicker">Alerts</div><button class="btn btn-ghost" onclick="closeDrawer()">Close</button></div>
     <h2>Free daily, or text first.</h2>
-    <button class="btn btn-copper" style="width:100%;margin-bottom:12px" onclick="enablePush()">Enable push notifications</button>
+    <button class="btn btn-copper" style="width:100%;margin-bottom:12px" onclick="enablePush()">Enable background push</button>
     <form class="form" onsubmit="event.preventDefault();notify('Alert saved','We will notify you on this device');closeDrawer()">
       <input required type="email" placeholder="Email" />
       <input type="tel" placeholder="Mobile for Pass SMS" />
