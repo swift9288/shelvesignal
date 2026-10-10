@@ -268,9 +268,10 @@ let lists = JSON.parse(localStorage.getItem("ss-lists")||"[]");
 let activeList = localStorage.getItem("ss-active") || (lists[0]&&lists[0].id);
 let claims = JSON.parse(localStorage.getItem("ss-claims")||"{}");
 let budget = Number(localStorage.getItem("ss-budget")||250);
+let drops = JSON.parse(localStorage.getItem("ss-drops")||"{}");
 
 function toast(m){const el=document.getElementById("toast");el.textContent=m;el.classList.add("on");setTimeout(()=>el.classList.remove("on"),2000)}
-function save(){localStorage.setItem("ss-lists",JSON.stringify(lists));localStorage.setItem("ss-active",activeList||"");localStorage.setItem("ss-claims",JSON.stringify(claims));localStorage.setItem("ss-budget",budget)}
+function save(){localStorage.setItem("ss-lists",JSON.stringify(lists));localStorage.setItem("ss-active",activeList||"");localStorage.setItem("ss-claims",JSON.stringify(claims));localStorage.setItem("ss-budget",budget);localStorage.setItem("ss-drops",JSON.stringify(drops))}
 
 function visibleToys(){
   let list = toys.filter(t => mode==="year" ? yearRound.includes(t.id) : true);
@@ -340,6 +341,7 @@ function openToy(id){
     <div class="form" style="margin-top:14px">
       <button class="btn btn-hot" onclick="addToActive('${t.id}')">Add to active list</button>
       <button class="btn btn-copper" onclick="claim('${t.id}')">${claimed?"Claimed by "+claimed:"Claim this gift"}</button>
+      <button class="btn btn-ghost" onclick="setDrop('${t.id}')">${drops[t.id]?"Drop alert at $"+drops[t.id]:"Set price-drop alert"}</button>
       <button class="btn btn-ghost" onclick="shareClaim('${t.id}')">Copy claim link</button>
     </div>`;
   document.getElementById("drawer").classList.add("on");
@@ -437,6 +439,26 @@ function renderDash(){
     <div class="box"><div class="kicker">Season Pass</div><h2>$24</h2><p class="muted">SMS, lists, history. Upsell sits on every alert.</p></div>
   `+rows.sort((a,b)=>b.rev-a.rev).slice(0,6).map(t=>`<div class="box"><strong>${t.name}</strong><div class="muted">${t.clicks.toLocaleString()} clicks · ${t.orders} orders</div><div class="price" style="margin-top:6px">$${t.rev}</div></div>`).join("");
 }
+function setDrop(id){
+  const t=toys.find(x=>x.id===id);
+  const current=drops[id]||Math.max(1, t.price-5);
+  const val=prompt("Alert me when the price drops to or below:", current);
+  if(val===null) return;
+  const n=Number(val);
+  if(!n||n<=0){ delete drops[id]; toast("Drop alert cleared"); }
+  else { drops[id]=n; toast("Drop alert set at $"+n); }
+  save(); openToy(id);
+}
+function checkDrops(){
+  const hit=Object.entries(drops).filter(([id,target])=>{
+    const t=toys.find(x=>x.id===id);
+    return t && t.price<=target;
+  });
+  if(hit.length){
+    const names=hit.map(([id])=>toys.find(t=>t.id===id).name).join(", ");
+    toast("Price drop: "+names);
+  }
+}
 function openAlert(){
   document.getElementById("drawer").innerHTML=`
     <div class="row"><div class="kicker">Alerts</div><button class="btn btn-ghost" onclick="closeDrawer()">Close</button></div>
@@ -447,7 +469,11 @@ function openAlert(){
       <select><option>Any Hot list tightening</option>${toys.filter(t=>t.status==="hot").map(t=>`<option>${t.name}</option>`).join("")}</select>
       <button class="btn btn-copper" type="submit">Save free alert</button>
       <button class="btn btn-hot" type="button" onclick="toast('Pass reserved · demo');closeDrawer()">Season Pass · $24</button>
-    </form>`;
+    </form>
+    <div style="margin-top:16px">
+      <div class="kicker">Price-drop alerts</div>
+      <div id="dropList" style="margin-top:8px">${Object.keys(drops).length ? Object.entries(drops).map(([id,target])=>{const t=toys.find(x=>x.id===id); return t?`<div class="list-item"><div>${t.name}<div class="muted">Alert at $${target} · now $${t.price}</div></div><button class="btn btn-ghost" onclick="delete drops['${id}'];save();openAlert()">Clear</button></div>`:""}).join("") : "<p class='muted'>None yet. Open a toy and set a target price.</p>"}</div>
+    </div>`;
   document.getElementById("drawer").classList.add("on");
   document.getElementById("back").classList.add("on");
 }
@@ -483,7 +509,7 @@ function renderHistory(){
     <div class="muted">Low $${t.c.low} · High $${t.c.high} · ${t.c.delta>0?"+":""}${t.c.delta} (${t.c.pct}%) over 7 days</div>
   </div>`).join("");
 }
-renderRadar(); renderLists(); renderCal(); renderHistory(); renderDash(); checkLocal(); countdown(); setInterval(countdown,1000);
+renderRadar(); renderLists(); renderCal(); renderHistory(); renderDash(); checkLocal(); checkDrops(); countdown(); setInterval(countdown,1000);
 </script>
 </body>
 </html>
