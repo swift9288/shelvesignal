@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ShelfSignal — Hot toy stock radar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,620&family=Outfit:wght@340;420;520;600&display=swap" rel="stylesheet" />
+<style>
+:root{--bg:#10120f;--card:#1c201a;--line:rgba(244,236,220,.1);--ink:#f4ecdc;--muted:#a79d8c;--dim:#6f685c;--copper:#e2a15a;--hot:#ef5b3a;--ok:#8fbf6a;--wait:#7eb0d4;--radius:18px}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{font-family:Outfit,sans-serif;background:radial-gradient(900px 480px at 90% -10%,rgba(226,161,90,.16),transparent 55%),radial-gradient(700px 420px at -10% 20%,rgba(239,91,58,.08),transparent 50%),var(--bg);color:var(--ink);min-height:100vh}
+button,input,select{font-family:inherit}a{color:inherit;text-decoration:none}
+.wrap{width:min(1120px,calc(100% - 32px));margin:0 auto}
+header.top{position:sticky;top:0;z-index:20;backdrop-filter:blur(16px);background:rgba(16,18,15,.82);border-bottom:1px solid var(--line)}
+.top-inner{display:flex;align-items:center;justify-content:space-between;height:64px;gap:12px}
+.brand{display:flex;align-items:center;gap:10px}
+.mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(160deg,var(--copper),var(--hot));display:grid;place-items:center}
+.brand strong{font-family:Fraunces,serif;font-weight:620;font-size:20px}
+.tabs{display:flex;gap:6px;overflow:auto;padding:0 0 0 8px}
+.tab{background:transparent;color:var(--muted);border:0;padding:8px 10px;border-radius:999px;cursor:pointer;font-size:13px;white-space:nowrap}
+.tab.on{background:var(--ink);color:#16140f}
+.btn{border:0;cursor:pointer;border-radius:999px;padding:10px 14px;font-weight:560;font-size:14px}
+.btn-copper{background:var(--copper);color:#1a1208}.btn-hot{background:var(--hot);color:#fff}.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.view{display:none;padding:22px 0 48px}.view.on{display:block}
+.kicker{color:var(--copper);letter-spacing:.16em;text-transform:uppercase;font-size:11px;font-weight:600}
+h1{font-family:Fraunces,serif;font-weight:500;font-size:clamp(36px,5vw,56px);line-height:.95;letter-spacing:-.04em;margin:8px 0 12px}
+h2{font-family:Fraunces,serif;font-weight:520;letter-spacing:-.03em;font-size:28px;margin:6px 0 8px}
+.muted{color:var(--muted);line-height:1.5}
+.hero{display:grid;grid-template-columns:1.3fr .7fr;gap:20px;align-items:end;margin-bottom:16px}
+.stats{display:flex;gap:16px;flex-wrap:wrap}.stat b{display:block;font-family:Fraunces,serif;font-size:26px}.stat small{color:var(--dim);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.countdown{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px}
+.ticks{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.tick{background:#12150f;border-radius:12px;padding:8px 4px;text-align:center}.tick b{font-family:Fraunces,serif;font-size:22px}.tick span{color:var(--dim);font-size:10px;text-transform:uppercase}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}
+.chip{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:7px 11px;cursor:pointer;font-size:13px}
+.chip.on{background:var(--ink);color:#16140f}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;display:grid;grid-template-columns:64px 1fr;gap:12px;cursor:pointer}
+.card:hover{border-color:rgba(226,161,90,.45)}
+.swatch{width:64px;height:64px;border-radius:14px;display:grid;place-items:center;font-family:Fraunces,serif;font-size:20px;color:#1a1208}
+.name{font-weight:580;margin:0 0 2px;font-size:15px}.sub{color:var(--muted);font-size:12px;margin:0}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:3px 7px}
+.b-hot{background:rgba(239,91,58,.16);color:#ffb1a1}.b-ok{background:rgba(143,191,106,.16);color:#c6e4ad}.b-wait{background:rgba(126,176,212,.16);color:#c5e2f5}
+.price{font-family:Fraunces,serif;font-size:22px}.why{color:var(--muted);font-size:13px;margin:6px 0 0;line-height:1.4}
+.shops{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.shop{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:4px 7px}
+.shop.out{color:var(--dim);text-decoration:line-through}
+.box{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px;margin-bottom:12px}
+.row{display:flex;justify-content:space-between;gap:8px;align-items:center}
+input,select{background:#10130e;color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:11px;font-size:15px;width:100%}
+.form{display:grid;gap:8px}
+.list-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--line);gap:10px}
+.drawer-back{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;z-index:30}.drawer-back.on{display:block}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(420px,100%);background:#161913;border-left:1px solid var(--line);z-index:31;transform:translateX(100%);transition:.25s;padding:18px;overflow:auto}
+.drawer.on{transform:none}
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--ink);color:#16140f;padding:11px 14px;border-radius:999px;font-weight:560;opacity:0;pointer-events:none;transition:.2s;z-index:40}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.cal{display:grid;gap:8px}.cal-day{display:grid;grid-template-columns:90px 1fr;gap:10px;padding:10px;border:1px solid var(--line);border-radius:14px}
+.meter{height:8px;background:#12150f;border-radius:99px;overflow:hidden}.meter span{display:block;height:100%;background:var(--copper)}
+@media(max-width:800px){.hero,.grid{grid-template-columns:1fr}.tabs{max-width:46vw}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-inner">
+    <div class="brand">
+      <div class="mark"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 11.5 6.2 4l2.3 4.2L11 5.2 14 11.5" stroke="#1a1208" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+      <strong>ShelfSignal</strong>
+    </div>
+    <nav class="tabs">
+      <button class="tab on" data-v="radar">Radar</button>
+      <button class="tab" data-v="lists">Lists</button>
+      <button class="tab" data-v="local">Local</button>
+      <button class="tab" data-v="calendar">Calendar</button>
+      <button class="tab" data-v="scan">Scan</button>
+      <button class="tab" data-v="dash">Dashboard</button>
+    </nav>
+    <button class="btn btn-copper" onclick="openAlert()">Alert</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="view on" id="radar">
+    <div class="hero">
+      <div>
+        <div class="kicker" id="modeLabel">Christmas toy radar · Oct 2026</div>
+        <h1>Know before the shelf <em style="font-style:italic;color:var(--copper)">goes dark.</em></h1>
+        <p class="muted">Buy-now or wait-for-Black-Friday, with restock velocity, alternatives, and claim links so two relatives don’t buy the same doll.</p>
+        <div class="stats">
+          <div class="stat"><b id="tightCount">8</b><small>Tightening</small></div>
+          <div class="stat"><b id="dayCount">16</b><small>Tracked</small></div>
+          <div class="stat"><b id="bfDays">49</b><small>Days to Black Friday</small></div>
+        </div>
+        <div style="margin-top:12px"><button class="btn btn-ghost" id="modeBtn" onclick="toggleMode()">Switch to year-round</button></div>
+      </div>
+      <aside class="countdown">
+        <div class="kicker">Until Black Friday · Nov 27</div>
+        <div class="ticks" id="ticks"></div>
+      </aside>
+    </div>
+    <div class="toolbar">
+      <button class="chip on" data-f="all">All</button>
+      <button class="chip" data-f="hot">Buy now</button>
+      <button class="chip" data-f="wait">Wait</button>
+      <button class="chip" data-f="under">Under $35</button>
+      <button class="chip" data-f="kidult">Kidult</button>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section class="view" id="lists">
+    <div class="kicker">Family lists</div>
+    <h2>Named lists. Buyer sees prices. Kid doesn’t.</h2>
+    <div class="box">
+      <div class="form" style="grid-template-columns:1fr auto;display:grid">
+        <input id="newList" placeholder="List name — Emma, grandparents, office" />
+        <button class="btn btn-copper" onclick="addList()">Add</button>
+      </div>
+      <div id="listPicker" class="toolbar" style="margin-top:10px"></div>
+      <label style="display:flex;gap:8px;align-items:center;color:var(--muted);font-size:14px"><input type="checkbox" id="secret" onchange="renderList()" style="width:auto" /> Secrecy mode (hide prices and stock from this view)</label>
+    </div>
+    <div class="box">
+      <div class="row"><strong id="listTitle">No list yet</strong><span class="muted" id="listTotal"></span></div>
+      <div id="listBody" class="muted">Create a list, then add gifts from the radar.</div>
+    </div>
+    <div class="box">
+      <div class="kicker">Budget envelope</div>
+      <div class="form" style="grid-template-columns:1fr auto;display:grid;margin-top:8px">
+        <input id="budget" type="number" placeholder="Total budget" value="250" />
+        <button class="btn btn-ghost" onclick="saveBudget()">Set</button>
+      </div>
+      <div style="margin-top:12px" class="meter"><span id="budgetBar" style="width:0%"></span></div>
+      <p class="muted" id="budgetText" style="margin:8px 0 0">Set a budget to see remaining.</p>
+    </div>
+  </section>
+
+  <section class="view" id="local">
+    <div class="kicker">Local stock</div>
+    <h2>What’s actually on a shelf near you.</h2>
+    <div class="box">
+      <div class="form" style="grid-template-columns:1fr auto;display:grid">
+        <input id="zip" placeholder="ZIP code" value="28202" maxlength="10" />
+        <button class="btn btn-copper" onclick="checkLocal()">Check</button>
+      </div>
+      <p class="muted" style="margin-top:8px">Demo inventory for Target, Walmart, and Best Buy. A live app would call store-locator APIs.</p>
+    </div>
+    <div id="localBody"></div>
+  </section>
+
+  <section class="view" id="calendar">
+    <div class="kicker">Deal calendar</div>
+    <h2>When the Wait score pays off.</h2>
+    <div class="cal" id="cal"></div>
+  </section>
+
+  <section class="view" id="scan">
+    <div class="kicker">In the aisle</div>
+    <h2>Barcode or photo check.</h2>
+    <div class="box">
+      <p class="muted">Point at a box. In this prototype, pick a toy to simulate a scan and get the live call plus a better online price.</p>
+      <select id="scanPick" style="margin-top:10px"></select>
+      <button class="btn btn-copper" style="margin-top:10px" onclick="doScan()">Scan</button>
+      <div id="scanOut" style="margin-top:14px"></div>
+    </div>
+  </section>
+
+  <section class="view" id="dash">
+    <div class="kicker">Owner dashboard</div>
+    <h2>Estimated affiliate, this season.</h2>
+    <div class="grid" id="dashGrid"></div>
+    <div class="box" style="margin-top:12px">
+      <p class="muted">Illustrative. Real numbers land once tagged links and a checkout pixel are live. Blended toy rate modeled at 4%.</p>
+    </div>
+  </section>
+</main>
+
+<div class="drawer-back" id="back" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer"></aside>
+<div class="toast" id="toast"></div>
+
+<script>
+const toys = [
+  {id:"rumi",name:"Rumi “Golden” singing doll",brand:"Mattel · KPop Demon Hunters",price:32,was:35,status:"hot",call:"Buy now",score:92,tag:"Franchise",hue:"#e2a15a",letter:"R",kidult:false,age:"4+",
+    why:"Editors’ early favorite. Sings the solo. Preorder velocity is the tell.",
+    shops:[{n:"Target",ok:true},{n:"Walmart",ok:false},{n:"Amazon",ok:true}],
+    hist:[38,36,35,34,33,32,32],velocity:"Last 2 restocks lasted under 20 min",alt:["gabby","jelly"],clicks:4200,orders:380},
+  {id:"elmo",name:"Tickle Me Elmo Giggle Max",brand:"Sesame · 30th anniversary",price:45,was:50,status:"hot",call:"Buy now",score:88,tag:"Nostalgia",hue:"#ef5b3a",letter:"E",kidult:false,age:"18m+",
+    why:"Anniversary reboot. Preschool gifts like this vanish the week of Thanksgiving.",
+    shops:[{n:"Walmart",ok:true},{n:"Target",ok:true},{n:"Amazon",ok:false}],
+    hist:[50,49,48,47,46,45,45],velocity:"Usually back within 36 hours, then gone",alt:["gabby","skye"],clicks:3100,orders:240},
+  {id:"mega",name:"Primal Hatch Megalodon",brand:"Spin Master · hatching egg",price:28,was:30,status:"hot",call:"Buy now",score:86,tag:"Viral",hue:"#7eb0d4",letter:"M",kidult:false,age:"5+",
+    why:"Add water, it fizzes, a shark hatches. Surprise toys with a video hook sell through first.",
+    shops:[{n:"Target",ok:true},{n:"Amazon",ok:true},{n:"Walmart",ok:true}],
+    hist:[32,31,30,29,28,28,28],velocity:"Restocks last ~11 minutes on video days",alt:["slime","jelly"],clicks:2800,orders:310},
+  {id:"pika",name:"Pikachu Puppetronic",brand:"Jazwares · RealFX",price:55,was:60,status:"hot",call:"Buy now",score:84,tag:"Screen-free",hue:"#e6c85a",letter:"P",kidult:true,age:"6+",
+    why:"Hand-puppet animatronic. Moving fast around the franchise’s 30th year.",
+    shops:[{n:"Amazon",ok:true},{n:"GameStop",ok:false},{n:"Target",ok:true}],
+    hist:[60,58,56,55,55,55,55],velocity:"Preorder queue, limited street stock",alt:["etb","lego"],clicks:1900,orders:140},
+  {id:"gabby",name:"Gabby the Grow & Roar",brand:"furReal · Just Play",price:70,was:80,status:"hot",call:"Buy soon",score:80,tag:"Interactive pet",hue:"#d98a4a",letter:"G",kidult:false,age:"4+",
+    why:"Starts as a cub and grows with play.",
+    shops:[{n:"Amazon",ok:true},{n:"Walmart",ok:true},{n:"Target",ok:false}],
+    hist:[80,76,74,72,70,70,70],velocity:"Steady sell-through, not flash",alt:["skye","elmo"],clicks:1600,orders:95},
+  {id:"skye",name:"My Magical Dragon Skye",brand:"Little Live Pets",price:50,was:50,status:"hot",call:"Buy now",score:79,tag:"Animatronic",hue:"#8fbf6a",letter:"S",kidult:false,age:"4+",
+    why:"60+ reactions. Already selling through at some retailers.",
+    shops:[{n:"Target",ok:false},{n:"Walmart",ok:true},{n:"Amazon",ok:true}],
+    hist:[50,50,49,50,50,50,50],velocity:"Target often first to zero",alt:["gabby","elmo"],clicks:1400,orders:88},
+  {id:"etb",name:"Pokémon 30th Elite Trainer Box",brand:"Pokémon TCG",price:55,was:50,status:"hot",call:"Buy now",score:90,tag:"Collectible",hue:"#f0d36a",letter:"30",kidult:true,age:"6+",
+    why:"Anniversary cardboard. These rarely get cheaper into December.",
+    shops:[{n:"Pokemon Center",ok:false},{n:"Target",ok:true},{n:"Walmart",ok:true}],
+    hist:[50,52,54,55,58,55,55],velocity:"Secondary already above retail on some SKUs",alt:["pika","labubu"],clicks:5100,orders:420},
+  {id:"bluey",name:"Bluey Light & Surprise House",brand:"Moose · Heeler House",price:60,was:70,status:"wait",call:"Wait",score:61,tag:"Playset",hue:"#6aa7d8",letter:"B",kidult:false,age:"3+",
+    why:"Evergreen, wide distribution. A real discount is likely in the toy doorbusters.",
+    shops:[{n:"Walmart",ok:true},{n:"Target",ok:true},{n:"Amazon",ok:true}],
+    hist:[70,66,64,62,60,60,60],velocity:"Always findable; wait for ~20% off",alt:["paw","chomp"],clicks:900,orders:40},
+  {id:"paw",name:"PAW Patrol Megasaurus",brand:"Spin Master · Dino Movie",price:48,was:55,status:"wait",call:"Wait",score:58,tag:"Playset",hue:"#ef7a4a",letter:"D",kidult:false,age:"3+",
+    why:"Fun, widely stocked. Not scarce enough to pay full price in October.",
+    shops:[{n:"Target",ok:true},{n:"Walmart",ok:true},{n:"Amazon",ok:true}],
+    hist:[55,52,50,49,48,48,48],velocity:"Healthy stock across doors",alt:["bluey","mega"],clicks:700,orders:32},
+  {id:"slime",name:"Gui Gui Mega Slime Haul",brand:"Sensory · 50 pieces",price:30,was:30,status:"ok",call:"Either",score:66,tag:"Sensory",hue:"#c58bd0",letter:"Sl",kidult:false,age:"6+",
+    why:"Easy to restock. Waiting costs little.",
+    shops:[{n:"Amazon",ok:true},{n:"Walmart",ok:true},{n:"Target",ok:true}],
+    hist:[30,28,30,29,30,30,30],velocity:"Restocks weekly",alt:["needoh","jelly"],clicks:600,orders:55},
+  {id:"record",name:"Miniverse record player",brand:"MGA · tiny vinyl",price:25,was:25,status:"wait",call:"Wait",score:57,tag:"Kidult",hue:"#d8c3a5",letter:"♪",kidult:true,age:"8+",
+    why:"Parent takeover gift. Better as a sale stocking add-on.",
+    shops:[{n:"Target",ok:true},{n:"Amazon",ok:true},{n:"Walmart",ok:false}],
+    hist:[25,25,24,25,25,25,25],velocity:"Not capacity constrained",alt:["lego","labubu"],clicks:400,orders:22},
+  {id:"lego",name:"LEGO Star Wars SMART Play",brand:"Throne Room Duel",price:130,was:150,status:"wait",call:"Wait",score:54,tag:"Build",hue:"#e8e2d4",letter:"L",kidult:true,age:"9+",
+    why:"Kidult LEGO discounts reliably around Black Friday.",
+    shops:[{n:"LEGO",ok:true},{n:"Target",ok:true},{n:"Amazon",ok:true}],
+    hist:[150,140,135,130,130,130,130],velocity:"Wide; wait unless exclusive mold",alt:["pika","etb"],clicks:1100,orders:48},
+  {id:"chomp",name:"ChompSaw cardboard cutter",brand:"Chompshop · Creative Toy of the Year",price:30,was:30,status:"ok",call:"Either",score:70,tag:"Make",hue:"#e2a15a",letter:"C",kidult:false,age:"6+",
+    why:"Niche enough to watch, common enough that a week’s wait is fine.",
+    shops:[{n:"Amazon",ok:true},{n:"Walmart",ok:true}],
+    hist:[30,30,29,30,30,30,30],velocity:"Stable",alt:["slime","needoh"],clicks:350,orders:28},
+  {id:"needoh",name:"NeeDoh Nice Cube",brand:"Schylling · squish",price:12,was:13,status:"ok",call:"Either",score:63,tag:"Fidget",hue:"#8fbf6a",letter:"N",kidult:false,age:"3+",
+    why:"Low stakes. Buy when you see it.",
+    shops:[{n:"Target",ok:true},{n:"Walmart",ok:true},{n:"Amazon",ok:true}],
+    hist:[13,12,12,12,12,12,12],velocity:"Always around",alt:["slime","jelly"],clicks:280,orders:40},
+  {id:"labubu",name:"Labubu bag charm",brand:"Pop Mart · blind box",price:28,was:28,status:"hot",call:"Buy now",score:85,tag:"Collectible",hue:"#d98aa8",letter:"La",kidult:true,age:"8+",
+    why:"Retail drops vanish. Secondary is the risk if you wait.",
+    shops:[{n:"Pop Mart",ok:false},{n:"Resale",ok:true}],
+    hist:[28,32,40,36,34,28,28],velocity:"Drop windows measured in minutes",alt:["etb","jelly"],clicks:6400,orders:510},
+  {id:"jelly",name:"Magic Jellykins blind box",brand:"Surprise plush",price:15,was:18,status:"ok",call:"Either",score:64,tag:"Blind box",hue:"#f0a3c2",letter:"J",kidult:false,age:"5+",
+    why:"Fine stocking gift. Don’t pay a December convenience markup.",
+    shops:[{n:"Target",ok:true},{n:"Amazon",ok:true}],
+    hist:[18,16,15,15,15,15,15],velocity:"Easy restock",alt:["labubu","slime"],clicks:500,orders:60}
+];
+
+const yearRound = ["labubu","etb","pika","lego","record","needoh"];
+let mode = "holiday";
+let filter = "all";
+let lists = JSON.parse(localStorage.getItem("ss-lists")||"[]");
+let activeList = localStorage.getItem("ss-active") || (lists[0]&&lists[0].id);
+let claims = JSON.parse(localStorage.getItem("ss-claims")||"{}");
+let budget = Number(localStorage.getItem("ss-budget")||250);
+
+function toast(m){const el=document.getElementById("toast");el.textContent=m;el.classList.add("on");setTimeout(()=>el.classList.remove("on"),2000)}
+function save(){localStorage.setItem("ss-lists",JSON.stringify(lists));localStorage.setItem("ss-active",activeList||"");localStorage.setItem("ss-claims",JSON.stringify(claims));localStorage.setItem("ss-budget",budget)}
+
+function visibleToys(){
+  let list = toys.filter(t => mode==="year" ? yearRound.includes(t.id) : true);
+  if(filter==="hot") list=list.filter(t=>t.status==="hot");
+  if(filter==="wait") list=list.filter(t=>t.status==="wait");
+  if(filter==="under") list=list.filter(t=>t.price<35);
+  if(filter==="kidult") list=list.filter(t=>t.kidult);
+  return list;
+}
+function renderRadar(){
+  const list=visibleToys();
+  document.getElementById("grid").innerHTML=list.map(t=>{
+    const b=t.status==="hot"?"b-hot":t.status==="wait"?"b-wait":"b-ok";
+    const claimed=claims[t.id];
+    return `<article class="card" onclick="openToy('${t.id}')">
+      <div class="swatch" style="background:${t.hue}">${t.letter}</div>
+      <div>
+        <div class="row"><div><h3 class="name">${t.name}</h3><p class="sub">${t.brand}</p></div><span class="badge ${b}">${t.call}</span></div>
+        <div class="row" style="margin-top:6px"><span class="price">$${t.price}</span><span class="muted" style="font-size:12px">Signal ${t.score}</span></div>
+        <p class="why">${t.velocity}</p>
+        <div class="shops">${t.shops.map(s=>`<span class="shop ${s.ok?"":"out"}">${s.n}${s.ok?"":" · out"}</span>`).join("")}${claimed?`<span class="shop">Claimed by ${claimed}</span>`:""}</div>
+      </div>
+    </article>`;
+  }).join("");
+  document.getElementById("tightCount").textContent=toys.filter(t=>t.status==="hot"&&(mode==="holiday"||yearRound.includes(t.id))).length;
+  document.getElementById("dayCount").textContent=mode==="year"?yearRound.length:toys.length;
+}
+function openToy(id){
+  const t=toys.find(x=>x.id===id);
+  const alts=(t.alt||[]).map(a=>toys.find(x=>x.id===a)).filter(Boolean);
+  const claimed=claims[t.id];
+  document.getElementById("drawer").innerHTML=`
+    <div class="row"><div class="kicker">${t.tag} · ${t.age}</div><button class="btn btn-ghost" onclick="closeDrawer()">Close</button></div>
+    <h2>${t.name}</h2>
+    <p class="muted">${t.brand}</p>
+    <div class="row"><span class="price">$${t.price}</span><span class="badge ${t.status==="hot"?"b-hot":t.status==="wait"?"b-wait":"b-ok"}">${t.call}</span></div>
+    <p class="why">${t.why}</p>
+    <p class="muted"><b style="color:var(--ink)">Velocity.</b> ${t.velocity}</p>
+    <div class="shops">${t.shops.map(s=>`<span class="shop ${s.ok?"":"out"}">${s.n}${s.ok?" · in stock":" · out"}</span>`).join("")}</div>
+    ${alts.length?`<p class="muted" style="margin-top:14px"><b style="color:var(--ink)">If it’s gone.</b></p><div class="shops">${alts.map(a=>`<span class="shop" onclick="openToy('${a.id}')" style="cursor:pointer">${a.name} · $${a.price}</span>`).join("")}</div>`:""}
+    <div class="form" style="margin-top:14px">
+      <button class="btn btn-hot" onclick="addToActive('${t.id}')">Add to active list</button>
+      <button class="btn btn-copper" onclick="claim('${t.id}')">${claimed?"Claimed by "+claimed:"Claim this gift"}</button>
+      <button class="btn btn-ghost" onclick="shareClaim('${t.id}')">Copy claim link</button>
+    </div>`;
+  document.getElementById("drawer").classList.add("on");
+  document.getElementById("back").classList.add("on");
+}
+function closeDrawer(){document.getElementById("drawer").classList.remove("on");document.getElementById("back").classList.remove("on")}
+function addList(){
+  const name=document.getElementById("newList").value.trim(); if(!name) return;
+  const id="l"+Date.now();
+  lists.push({id,name,items:[]}); activeList=id; save(); document.getElementById("newList").value=""; renderLists(); toast("List created");
+}
+function renderLists(){
+  document.getElementById("listPicker").innerHTML=lists.map(l=>`<button class="chip ${l.id===activeList?"on":""}" onclick="setList('${l.id}')">${l.name}</button>`).join("")||"<span class='muted'>No lists yet</span>";
+  renderList();
+}
+function setList(id){activeList=id;save();renderLists()}
+function renderList(){
+  const L=lists.find(l=>l.id===activeList);
+  const secret=document.getElementById("secret")?.checked;
+  if(!L){document.getElementById("listTitle").textContent="No list yet";document.getElementById("listBody").innerHTML="Create a list, then add gifts from the radar.";return}
+  document.getElementById("listTitle").textContent=L.name+(secret?" · secrecy on":"");
+  const items=L.items.map(id=>toys.find(t=>t.id===id)).filter(Boolean);
+  const total=items.reduce((s,t)=>s+t.price,0);
+  document.getElementById("listTotal").textContent=secret?"":`$${total}`;
+  document.getElementById("listBody").innerHTML=items.length?items.map(t=>`<div class="list-item"><div><strong>${t.name}</strong><div class="muted">${secret?"Hidden":"$"+t.price+" · "+t.call}${claims[t.id]?" · claimed by "+claims[t.id]:""}</div></div><button class="btn btn-ghost" onclick="removeItem('${t.id}')">Remove</button></div>`).join(""):"<span class='muted'>Empty. Open a toy on the radar and add it.</span>";
+  const pct=Math.min(100,Math.round(total/budget*100));
+  document.getElementById("budgetBar").style.width=pct+"%";
+  document.getElementById("budgetText").textContent=secret?"Prices hidden in secrecy mode.":`$${total} of $${budget} · $${Math.max(0,budget-total)} left`;
+}
+function addToActive(id){
+  const L=lists.find(l=>l.id===activeList);
+  if(!L){toast("Create a list first");return}
+  if(!L.items.includes(id)) L.items.push(id);
+  save(); renderList(); toast("Added to "+L.name);
+}
+function removeItem(id){const L=lists.find(l=>l.id===activeList); if(!L)return; L.items=L.items.filter(x=>x!==id); save(); renderList()}
+function saveBudget(){budget=Number(document.getElementById("budget").value)||0; save(); renderList(); toast("Budget set")}
+function claim(id){
+  const who=prompt("Who is claiming this?","Alex")||"Someone";
+  claims[id]=who; save(); openToy(id); toast("Claimed");
+}
+function shareClaim(id){
+  const url=location.origin+location.pathname+"?claim="+id;
+  navigator.clipboard?.writeText(url).then(()=>toast("Claim link copied")).catch(()=>toast(url));
+}
+
+function checkLocal(){
+  const zip=document.getElementById("zip").value.trim()||"28202";
+  const stores=["Target — South End","Walmart — Sugar Creek","Best Buy — Concord"];
+  const hot=toys.filter(t=>t.status==="hot").slice(0,6);
+  document.getElementById("localBody").innerHTML=stores.map((s,i)=>`<div class="box"><strong>${s}</strong><div class="muted">${zip}</div>${hot.map((t,j)=>{
+    const inStock=((i+j)%3)!==0;
+    return `<div class="list-item"><div>${t.name}</div><span class="badge ${inStock?"b-ok":"b-hot"}">${inStock?"In stock · aisle "+(12+j):"Out"}</span></div>`;
+  }).join("")}</div>`).join("");
+}
+function renderCal(){
+  const days=[
+    ["Now – Nov 20","Buy the scarce ones","Rumi, Elmo Giggle Max, Megalodon, Pokémon 30th ETB, Labubu. These do not wait well."],
+    ["Nov 21–26","Watch doorbusters","Retailers leak toy ads. Bluey house and PAW sets often appear."],
+    ["Nov 27","Black Friday","Historically 20–40% off evergreen playsets and LEGO. Do not expect the anniversary Elmo or ETB to drop."],
+    ["Nov 30","Cyber Monday","Online-only leftovers and lightning restocks. Pass SMS earns its fee here."],
+    ["Dec 10–18","Last reliable ship","After this, local stock and pickup matter more than price."],
+    ["Dec 19–24","Shelf or nothing","Buy whatever is physically in a store. Alternatives module is the product."]
+  ];
+  document.getElementById("cal").innerHTML=days.map(([d,t,b])=>`<div class="cal-day"><div class="kicker">${d}</div><div><strong>${t}</strong><div class="muted">${b}</div></div></div>`).join("");
+}
+function doScan(){
+  const id=document.getElementById("scanPick").value;
+  const t=toys.find(x=>x.id===id);
+  const better=Math.max(t.price-4,t.price);
+  document.getElementById("scanOut").innerHTML=`<div class="box" style="margin:0"><strong>${t.name}</strong><p class="muted">${t.call} · Signal ${t.score}</p><p>Shelf price near you: <b>$${t.price+3}</b><br>Better online: <b>$${t.price}</b> at ${t.shops.find(s=>s.ok)?.n||"online"}</p><p class="muted">${t.velocity}</p><button class="btn btn-copper" onclick="openToy('${t.id}')">Open full call</button></div>`;
+}
+function renderDash(){
+  const rows=toys.map(t=>({...t,rev:Math.round(t.orders*t.price*0.04)}));
+  const total=rows.reduce((s,t)=>s+t.rev,0);
+  document.getElementById("dashGrid").innerHTML=`
+    <div class="box"><div class="kicker">Modeled affiliate</div><h2>$${total.toLocaleString()}</h2><p class="muted">4% of illustrated orders</p></div>
+    <div class="box"><div class="kicker">Season Pass</div><h2>$24</h2><p class="muted">SMS, lists, history. Upsell sits on every alert.</p></div>
+  `+rows.sort((a,b)=>b.rev-a.rev).slice(0,6).map(t=>`<div class="box"><strong>${t.name}</strong><div class="muted">${t.clicks.toLocaleString()} clicks · ${t.orders} orders</div><div class="price" style="margin-top:6px">$${t.rev}</div></div>`).join("");
+}
+function openAlert(){
+  document.getElementById("drawer").innerHTML=`
+    <div class="row"><div class="kicker">Alerts</div><button class="btn btn-ghost" onclick="closeDrawer()">Close</button></div>
+    <h2>Free daily, or text first.</h2>
+    <form class="form" onsubmit="event.preventDefault();toast('Saved on this device');closeDrawer()">
+      <input required type="email" placeholder="Email" />
+      <input type="tel" placeholder="Mobile for Pass SMS" />
+      <select><option>Any Hot list tightening</option>${toys.filter(t=>t.status==="hot").map(t=>`<option>${t.name}</option>`).join("")}</select>
+      <button class="btn btn-copper" type="submit">Save free alert</button>
+      <button class="btn btn-hot" type="button" onclick="toast('Pass reserved · demo');closeDrawer()">Season Pass · $24</button>
+    </form>`;
+  document.getElementById("drawer").classList.add("on");
+  document.getElementById("back").classList.add("on");
+}
+function toggleMode(){
+  mode=mode==="holiday"?"year":"holiday";
+  document.getElementById("modeBtn").textContent=mode==="holiday"?"Switch to year-round":"Switch to holiday";
+  document.getElementById("modeLabel").textContent=mode==="holiday"?"Christmas toy radar · Oct 2026":"Year-round drops · Labubu, Pokémon, LEGO";
+  renderRadar();
+}
+function countdown(){
+  const target=new Date("2026-11-27T00:00:00-05:00");
+  const diff=Math.max(0,target-new Date());
+  const d=Math.floor(diff/86400000), h=Math.floor(diff/3600000)%24, m=Math.floor(diff/60000)%60, s=Math.floor(diff/1000)%60;
+  document.getElementById("ticks").innerHTML=[[d,"Days"],[h,"Hours"],[m,"Min"],[s,"Sec"]].map(([n,l])=>`<div class="tick"><b>${n}</b><span>${l}</span></div>`).join("");
+  document.getElementById("bfDays").textContent=d;
+}
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));
+  document.querySelectorAll(".view").forEach(x=>x.classList.remove("on"));
+  t.classList.add("on"); document.getElementById(t.dataset.v).classList.add("on");
+});
+document.querySelectorAll(".chip[data-f]").forEach(c=>c.onclick=()=>{
+  document.querySelectorAll(".chip[data-f]").forEach(x=>x.classList.remove("on"));
+  c.classList.add("on"); filter=c.dataset.f; renderRadar();
+});
+document.getElementById("scanPick").innerHTML=toys.map(t=>`<option value="${t.id}">${t.name}</option>`).join("");
+if(location.search.includes("claim=")){const id=new URLSearchParams(location.search).get("claim"); if(id) setTimeout(()=>openToy(id),300)}
+renderRadar(); renderLists(); renderCal(); renderDash(); checkLocal(); countdown(); setInterval(countdown,1000);
+</script>
+</body>
+</html>
