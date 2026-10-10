@@ -7,21 +7,57 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,620&family=Outfit:wght@340;420;520;600&display=swap" rel="stylesheet" />
 <style>
-:root{--bg:#10120f;--card:#1c201a;--line:rgba(244,236,220,.1);--ink:#f4ecdc;--muted:#a79d8c;--dim:#6f685c;--copper:#e2a15a;--hot:#ef5b3a;--ok:#8fbf6a;--wait:#7eb0d4;--radius:18px}
-body.light{--bg:#f6f1e8;--card:#fff;--line:rgba(26,24,20,.12);--ink:#1a1814;--muted:#5c564c;--dim:#8a8276}
-body.light .tick,body.light input,body.light select{background:#f0ebe3;color:var(--ink)}
+:root{
+  --bg:#0c1612;
+  --card:#152019;
+  --line:rgba(255,236,210,.12);
+  --ink:#fff6ea;
+  --muted:#c4b6a0;
+  --dim:#8a7d6c;
+  --copper:#e8b86a;
+  --hot:#c43c3c;
+  --ok:#3d8c5a;
+  --wait:#d4a574;
+  --gold:#f0d78c;
+  --radius:18px;
+}
+body.light{
+  --bg:#f8f1e6;
+  --card:#fffaf3;
+  --line:rgba(80,40,30,.12);
+  --ink:#2a1f18;
+  --muted:#6b5648;
+  --dim:#9a8476;
+  --copper:#b8860b;
+  --hot:#a32d2d;
+  --ok:#2d6a45;
+}
+body.light .tick,body.light input,body.light select{background:#f3eadc;color:var(--ink)}
 *{box-sizing:border-box}html,body{margin:0;padding:0}
-body{font-family:Outfit,sans-serif;background:radial-gradient(900px 480px at 90% -10%,rgba(226,161,90,.16),transparent 55%),radial-gradient(700px 420px at -10% 20%,rgba(239,91,58,.08),transparent 50%),var(--bg);color:var(--ink);min-height:100vh}
+body{font-family:Outfit,sans-serif;background:
+  radial-gradient(800px 420px at 95% -5%,rgba(196,60,60,.22),transparent 55%),
+  radial-gradient(700px 380px at -5% 15%,rgba(61,140,90,.18),transparent 50%),
+  radial-gradient(500px 300px at 50% 100%,rgba(240,215,140,.08),transparent 60%),
+  var(--bg);
+  color:var(--ink);min-height:100vh;position:relative}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.35;
+  background-image:radial-gradient(1.5px 1.5px at 20px 30px,#fff8,transparent),
+  radial-gradient(1.5px 1.5px at 80px 120px,#fff6,transparent),
+  radial-gradient(1px 1px at 140px 70px,#fff5,transparent),
+  radial-gradient(1.5px 1.5px at 200px 180px,#fff7,transparent),
+  radial-gradient(1px 1px at 260px 40px,#fff4,transparent);
+  background-size:280px 220px}
+.wrap,header.top{position:relative;z-index:1}
 button,input,select{font-family:inherit}a{color:inherit;text-decoration:none}
 .wrap{width:min(1120px,calc(100% - 32px));margin:0 auto}
-header.top{position:sticky;top:0;z-index:20;backdrop-filter:blur(16px);background:rgba(16,18,15,.82);border-bottom:1px solid var(--line)}
+header.top{position:sticky;top:0;z-index:20;backdrop-filter:blur(16px);background:rgba(12,22,18,.88);border-bottom:1px solid var(--line)}
 .top-inner{display:flex;align-items:center;justify-content:space-between;height:64px;gap:12px}
 .brand{display:flex;align-items:center;gap:10px}
-.mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(160deg,var(--copper),var(--hot));display:grid;place-items:center}
+.mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(160deg,#c43c3c,#e8b86a);display:grid;place-items:center;box-shadow:0 0 0 2px rgba(240,215,140,.25)}
 .brand strong{font-family:Fraunces,serif;font-weight:620;font-size:20px}
 .tabs{display:flex;gap:6px;overflow:auto;padding:0 0 0 8px}
 .tab{background:transparent;color:var(--muted);border:0;padding:8px 10px;border-radius:999px;cursor:pointer;font-size:13px;white-space:nowrap}
-.tab.on{background:var(--ink);color:#16140f}
+.tab.on{background:linear-gradient(160deg,#c43c3c,#e8b86a);color:#fffaf3}
 .btn{border:0;cursor:pointer;border-radius:999px;padding:10px 14px;font-weight:560;font-size:14px}
 .btn-copper{background:var(--copper);color:#1a1208}.btn-hot{background:var(--hot);color:#fff}.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
 .view{display:none;padding:22px 0 48px}.view.on{display:block}
@@ -33,24 +69,24 @@ h2{font-family:Fraunces,serif;font-weight:520;letter-spacing:-.03em;font-size:28
 .stats{display:flex;gap:16px;flex-wrap:wrap}.stat b{display:block;font-family:Fraunces,serif;font-size:26px}.stat small{color:var(--dim);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
 .countdown{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px}
 .ticks{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
-.tick{background:#12150f;border-radius:12px;padding:8px 4px;text-align:center}.tick b{font-family:Fraunces,serif;font-size:22px}.tick span{color:var(--dim);font-size:10px;text-transform:uppercase}
+.tick{background:#0e1a14;border:1px solid rgba(232,184,106,.15);border-radius:12px;padding:8px 4px;text-align:center}.tick b{font-family:Fraunces,serif;font-size:22px}.tick span{color:var(--dim);font-size:10px;text-transform:uppercase}
 .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}
 .chip{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:7px 11px;cursor:pointer;font-size:13px}
-.chip.on{background:var(--ink);color:#16140f}
+.chip.on{background:linear-gradient(160deg,#c43c3c,#e8b86a);color:#fffaf3}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;display:grid;grid-template-columns:64px 1fr;gap:12px;cursor:pointer}
-.card:hover{border-color:rgba(226,161,90,.45)}
+.card:hover{border-color:rgba(232,184,106,.6);box-shadow:0 4px 20px rgba(196,60,60,.12)}
 .swatch{width:64px;height:64px;border-radius:14px;overflow:hidden;background:#111;display:grid;place-items:center}
 .swatch img{width:100%;height:100%;object-fit:cover;display:block}
 .name{font-weight:580;margin:0 0 2px;font-size:15px}.sub{color:var(--muted);font-size:12px;margin:0}
 .badge{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:3px 7px}
-.b-hot{background:rgba(239,91,58,.16);color:#ffb1a1}.b-ok{background:rgba(143,191,106,.16);color:#c6e4ad}.b-wait{background:rgba(126,176,212,.16);color:#c5e2f5}
+.b-hot{background:rgba(196,60,60,.22);color:#ffc9c0}.b-ok{background:rgba(61,140,90,.22);color:#b8e6c8}.b-wait{background:rgba(232,184,106,.2);color:#ffe8b8}
 .price{font-family:Fraunces,serif;font-size:22px}.why{color:var(--muted);font-size:13px;margin:6px 0 0;line-height:1.4}
 .shops{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.shop{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:4px 7px}
 .shop.out{color:var(--dim);text-decoration:line-through}
 .box{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px;margin-bottom:12px}
 .row{display:flex;justify-content:space-between;gap:8px;align-items:center}
-input,select{background:#10130e;color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:11px;font-size:15px;width:100%}
+input,select{background:#0e1a14;color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:11px;font-size:15px;width:100%}
 .form{display:grid;gap:8px}
 .list-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--line);gap:10px}
 .drawer-back{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;z-index:30}.drawer-back.on{display:block}
@@ -91,7 +127,7 @@ input,select{background:#10130e;color:var(--ink);border:1px solid var(--line);bo
   <section class="view on" id="radar">
     <div class="hero">
       <div>
-        <div class="kicker" id="modeLabel">Christmas toy radar · Oct 2026</div>
+        <div class="kicker" id="modeLabel">Christmas toy radar · holiday 2026</div>
         <h1>Know before the shelf <em style="font-style:italic;color:var(--copper)">goes dark.</em></h1>
         <p class="muted">Buy-now or wait-for-Black-Friday, with restock velocity, alternatives, and claim links so two relatives don’t buy the same doll.</p>
         <div class="stats">
@@ -603,7 +639,7 @@ function openAlert(){
 function toggleMode(){
   mode=mode==="holiday"?"year":"holiday";
   document.getElementById("modeBtn").textContent=mode==="holiday"?"Switch to year-round":"Switch to holiday";
-  document.getElementById("modeLabel").textContent=mode==="holiday"?"Christmas toy radar · Oct 2026":"Year-round drops · Labubu, Pokémon, LEGO";
+  document.getElementById("modeLabel").textContent=mode==="holiday"?"Christmas toy radar · holiday 2026":"Year-round drops · Labubu, Pokémon, LEGO";
   renderRadar();
 }
 function countdown(){
