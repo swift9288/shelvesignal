@@ -40,7 +40,8 @@ h2{font-family:Fraunces,serif;font-weight:520;letter-spacing:-.03em;font-size:28
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;display:grid;grid-template-columns:64px 1fr;gap:12px;cursor:pointer}
 .card:hover{border-color:rgba(226,161,90,.45)}
-.swatch{width:64px;height:64px;border-radius:14px;display:grid;place-items:center;font-family:Fraunces,serif;font-size:20px;color:#1a1208}
+.swatch{width:64px;height:64px;border-radius:14px;overflow:hidden;background:#111;display:grid;place-items:center}
+.swatch img{width:100%;height:100%;object-fit:cover;display:block}
 .name{font-weight:580;margin:0 0 2px;font-size:15px}.sub{color:var(--muted);font-size:12px;margin:0}
 .badge{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:3px 7px}
 .b-hot{background:rgba(239,91,58,.16);color:#ffb1a1}.b-ok{background:rgba(143,191,106,.16);color:#c6e4ad}.b-wait{background:rgba(126,176,212,.16);color:#c5e2f5}
@@ -362,7 +363,7 @@ function renderRadar(){
     const b=t.status==="hot"?"b-hot":t.status==="wait"?"b-wait":"b-ok";
     const claimed=claims[t.id];
     return `<article class="card" onclick="openToy('${t.id}')">
-      <div class="swatch" style="background:${t.hue}">${t.letter}</div>
+      <div class="swatch"><img src="images/${t.id}.jpg" alt="${t.name}" onerror="this.style.display='none';this.parentNode.textContent='${t.letter}'" /></div>
       <div>
         <div class="row"><div><h3 class="name">${t.name}</h3><p class="sub">${t.brand}</p><p class="sub" style="font-size:11px;letter-spacing:.04em">SKU ${t.sku||"—"}</p></div><span class="badge ${b}">${t.call}</span></div>
         <div class="row" style="margin-top:6px"><span class="price">$${t.price}</span><span class="muted" style="font-size:12px">${(()=>{const c=priceChange(t); return (c.delta>0?"+":"")+c.delta+" ("+c.pct+"%)";})()}</span>${spark(t.hist)}</div>
@@ -381,6 +382,7 @@ function openToy(id){
   const claimed=claims[t.id];
   document.getElementById("drawer").innerHTML=`
     <div class="row"><div class="kicker">${t.tag} · ${t.age}</div><button class="btn btn-ghost" onclick="closeDrawer()">Close</button></div>
+    <div class="swatch" style="width:120px;height:120px;margin:10px 0"><img src="images/${t.id}.jpg" alt="${t.name}" onerror="this.style.display='none'" /></div>
     <h2>${t.name}</h2>
     <p class="muted">${t.brand}</p>
     <p class="muted" style="font-size:12px;letter-spacing:.06em">SKU ${t.sku||"—"}</p>
