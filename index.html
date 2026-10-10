@@ -73,6 +73,7 @@ input,select{background:#10130e;color:var(--ink);border:1px solid var(--line);bo
       <button class="tab" data-v="local">Local</button>
       <button class="tab" data-v="calendar">Calendar</button>
       <button class="tab" data-v="scan">Scan</button>
+      <button class="tab" data-v="history">History</button>
       <button class="tab" data-v="dash">Dashboard</button>
     </nav>
     <button class="btn btn-copper" onclick="openAlert()">Alert</button>
@@ -169,6 +170,13 @@ input,select{background:#10130e;color:var(--ink);border:1px solid var(--line);bo
       <button class="btn btn-copper" style="margin-top:10px" onclick="doScan()">Scan</button>
       <div id="scanOut" style="margin-top:14px"></div>
     </div>
+  </section>
+
+  <section class="view" id="history">
+    <div class="kicker">Price tracking</div>
+    <h2>How the price moved.</h2>
+    <p class="muted">7-day shelf history for every tracked gift. Lows, highs, and the change from the first day in the window.</p>
+    <div id="histBody"></div>
   </section>
 
   <section class="view" id="dash">
@@ -274,6 +282,24 @@ function visibleToys(){
   if(filter==="kidult") list=list.filter(t=>t.kidult);
   return list;
 }
+function spark(hist, w=72, h=28){
+  if(!hist||!hist.length) return "";
+  const min=Math.min(...hist), max=Math.max(...hist);
+  const pts=hist.map((v,i)=>{
+    const x=(i/(hist.length-1))*w;
+    const y=h-((v-min)/((max-min)||1))*(h-4)-2;
+    return x.toFixed(1)+","+y.toFixed(1);
+  }).join(" ");
+  return `<svg class="spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true"><polyline fill="none" stroke="#e2a15a" stroke-width="1.6" points="${pts}"/></svg>`;
+}
+function priceChange(t){
+  const h=t.hist||[];
+  if(h.length<2) return {delta:0, pct:0, low:t.price, high:t.price};
+  const first=h[0], last=h[h.length-1];
+  const delta=last-first;
+  const pct=first? Math.round(delta/first*100) : 0;
+  return {delta, pct, low:Math.min(...h), high:Math.max(...h)};
+}
 function renderRadar(){
   const list=visibleToys();
   document.getElementById("grid").innerHTML=list.map(t=>{
@@ -283,7 +309,7 @@ function renderRadar(){
       <div class="swatch" style="background:${t.hue}">${t.letter}</div>
       <div>
         <div class="row"><div><h3 class="name">${t.name}</h3><p class="sub">${t.brand}</p></div><span class="badge ${b}">${t.call}</span></div>
-        <div class="row" style="margin-top:6px"><span class="price">$${t.price}</span><span class="muted" style="font-size:12px">Signal ${t.score}</span></div>
+        <div class="row" style="margin-top:6px"><span class="price">$${t.price}</span><span class="muted" style="font-size:12px">${(()=>{const c=priceChange(t); return (c.delta>0?"+":"")+c.delta+" ("+c.pct+"%)";})()}</span>${spark(t.hist)}</div>
         <p class="why">${t.velocity}</p>
         <div class="shops">${t.shops.map(s=>`<span class="shop ${s.ok?"":"out"}">${s.n}${s.ok?"":" · out"}</span>`).join("")}${claimed?`<span class="shop">Claimed by ${claimed}</span>`:""}</div>
       </div>
@@ -301,6 +327,8 @@ function openToy(id){
     <h2>${t.name}</h2>
     <p class="muted">${t.brand}</p>
     <div class="row"><span class="price">$${t.price}</span><span class="badge ${t.status==="hot"?"b-hot":t.status==="wait"?"b-wait":"b-ok"}">${t.call}</span></div>
+    <div style="margin:10px 0">${spark(t.hist, 320, 64)}</div>
+    <p class="muted">7-day low $${priceChange(t).low} · high $${priceChange(t).high} · change ${priceChange(t).delta>0?"+":""}${priceChange(t).delta} (${priceChange(t).pct}%)</p>
     <p class="why">${t.why}</p>
     <p class="muted"><b style="color:var(--ink)">Velocity.</b> ${t.velocity}</p>
     <div class="shops">${t.shops.map(s=>`<span class="shop ${s.ok?"":"out"}">${s.n}${s.ok?" · in stock":" · out"}</span>`).join("")}</div>
@@ -447,7 +475,15 @@ document.querySelectorAll(".chip[data-f]").forEach(c=>c.onclick=()=>{
 });
 document.getElementById("scanPick").innerHTML=toys.map(t=>`<option value="${t.id}">${t.name}</option>`).join("");
 if(location.search.includes("claim=")){const id=new URLSearchParams(location.search).get("claim"); if(id) setTimeout(()=>openToy(id),300)}
-renderRadar(); renderLists(); renderCal(); renderDash(); checkLocal(); countdown(); setInterval(countdown,1000);
+function renderHistory(){
+  const rows=toys.map(t=>({...t, c:priceChange(t)})).sort((a,b)=>Math.abs(b.c.pct)-Math.abs(a.c.pct));
+  document.getElementById("histBody").innerHTML=rows.map(t=>`<div class="box">
+    <div class="row"><div><strong>${t.name}</strong><div class="muted">${t.brand}</div></div><span class="price">$${t.price}</span></div>
+    <div style="margin:8px 0">${spark(t.hist, 100, 36).replace('width="100"','width="100%"')}</div>
+    <div class="muted">Low $${t.c.low} · High $${t.c.high} · ${t.c.delta>0?"+":""}${t.c.delta} (${t.c.pct}%) over 7 days</div>
+  </div>`).join("");
+}
+renderRadar(); renderLists(); renderCal(); renderHistory(); renderDash(); checkLocal(); countdown(); setInterval(countdown,1000);
 </script>
 </body>
 </html>
