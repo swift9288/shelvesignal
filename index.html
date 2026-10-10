@@ -8,6 +8,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,620&family=Outfit:wght@340;420;520;600&display=swap" rel="stylesheet" />
 <style>
 :root{--bg:#10120f;--card:#1c201a;--line:rgba(244,236,220,.1);--ink:#f4ecdc;--muted:#a79d8c;--dim:#6f685c;--copper:#e2a15a;--hot:#ef5b3a;--ok:#8fbf6a;--wait:#7eb0d4;--radius:18px}
+body.light{--bg:#f6f1e8;--card:#fff;--line:rgba(26,24,20,.12);--ink:#1a1814;--muted:#5c564c;--dim:#8a8276}
+body.light .tick,body.light input,body.light select{background:#f0ebe3;color:var(--ink)}
 *{box-sizing:border-box}html,body{margin:0;padding:0}
 body{font-family:Outfit,sans-serif;background:radial-gradient(900px 480px at 90% -10%,rgba(226,161,90,.16),transparent 55%),radial-gradient(700px 420px at -10% 20%,rgba(239,91,58,.08),transparent 50%),var(--bg);color:var(--ink);min-height:100vh}
 button,input,select{font-family:inherit}a{color:inherit;text-decoration:none}
@@ -59,6 +61,8 @@ input,select{background:#10130e;color:var(--ink);border:1px solid var(--line);bo
 .meter{height:8px;background:#12150f;border-radius:99px;overflow:hidden}.meter span{display:block;height:100%;background:var(--copper)}
 @media(max-width:800px){.hero,.grid{grid-template-columns:1fr}.tabs{max-width:46vw}}
 </style>
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#10120f" />
 </head>
 <body>
 <header class="top">
@@ -76,6 +80,8 @@ input,select{background:#10130e;color:var(--ink);border:1px solid var(--line);bo
       <button class="tab" data-v="history">History</button>
       <button class="tab" data-v="dash">Dashboard</button>
     </nav>
+    <button class="btn btn-ghost" onclick="toggleTheme()" id="themeBtn">Light</button>
+    <button class="btn btn-ghost" onclick="installPWA()" id="installBtn" style="display:none">Install</button>
     <button class="btn btn-copper" onclick="openAlert()">Alert</button>
   </div>
 </header>
@@ -100,7 +106,13 @@ input,select{background:#10130e;color:var(--ink);border:1px solid var(--line);bo
       </aside>
     </div>
     <div class="toolbar" style="align-items:center">
-      <input id="search" placeholder="Search toys or brands…" oninput="renderRadar()" style="max-width:280px;flex:1" />
+      <input id="search" placeholder="Search toys, brands, or interests…" oninput="renderRadar()" style="max-width:280px;flex:1" />
+      <select id="ageFilter" onchange="renderRadar()" style="max-width:120px">
+        <option value="">Any age</option>
+        <option value="0-3">0–3</option>
+        <option value="4-6">4–6</option>
+        <option value="7+">7+</option>
+      </select>
       <button class="chip on" data-f="all">All</button>
       <button class="chip" data-f="hot">Buy now</button>
       <button class="chip" data-f="wait">Wait</button>
@@ -123,6 +135,10 @@ input,select{background:#10130e;color:var(--ink);border:1px solid var(--line);bo
     </div>
     <div class="box">
       <div class="row"><strong id="listTitle">No list yet</strong><span class="muted" id="listTotal"></span></div>
+      <div class="toolbar" style="margin-top:8px">
+        <button class="btn btn-ghost" onclick="shareList()">Share list link</button>
+        <button class="btn btn-ghost" onclick="exportList()">Print / export</button>
+      </div>
       <div id="listBody" class="muted">Create a list, then add gifts from the radar.</div>
     </div>
     <div class="box">
@@ -269,6 +285,9 @@ let activeList = localStorage.getItem("ss-active") || (lists[0]&&lists[0].id);
 let claims = JSON.parse(localStorage.getItem("ss-claims")||"{}");
 let budget = Number(localStorage.getItem("ss-budget")||250);
 let drops = JSON.parse(localStorage.getItem("ss-drops")||"{}");
+let restocks = JSON.parse(localStorage.getItem("ss-restocks")||"{}");
+let dropLog = JSON.parse(localStorage.getItem("ss-droplog")||"[]");
+let clicks = JSON.parse(localStorage.getItem("ss-clicks")||"{}");
 
 function toast(m){const el=document.getElementById("toast");el.textContent=m;el.classList.add("on");setTimeout(()=>el.classList.remove("on"),2000)}
 function notify(title, body){
@@ -292,7 +311,7 @@ async function enablePush(){
     notify("ShelfSignal", "Notifications on; service worker failed");
   }
 }
-function save(){localStorage.setItem("ss-lists",JSON.stringify(lists));localStorage.setItem("ss-active",activeList||"");localStorage.setItem("ss-claims",JSON.stringify(claims));localStorage.setItem("ss-budget",budget);localStorage.setItem("ss-drops",JSON.stringify(drops))}
+function save(){localStorage.setItem("ss-lists",JSON.stringify(lists));localStorage.setItem("ss-active",activeList||"");localStorage.setItem("ss-claims",JSON.stringify(claims));localStorage.setItem("ss-budget",budget);localStorage.setItem("ss-drops",JSON.stringify(drops));localStorage.setItem("ss-restocks",JSON.stringify(restocks));localStorage.setItem("ss-droplog",JSON.stringify(dropLog));localStorage.setItem("ss-clicks",JSON.stringify(clicks))}
 
 function visibleToys(){
   let list = toys.filter(t => mode==="year" ? yearRound.includes(t.id) : true);
@@ -302,6 +321,10 @@ function visibleToys(){
   if(filter==="wait") list=list.filter(t=>t.status==="wait");
   if(filter==="under") list=list.filter(t=>t.price<35);
   if(filter==="kidult") list=list.filter(t=>t.kidult);
+  const age = document.getElementById("ageFilter")?.value || "";
+  if(age==="0-3") list=list.filter(t=>/18m|3\+|0/.test(t.age||""));
+  if(age==="4-6") list=list.filter(t=>/4\+|5\+|6\+/.test(t.age||""));
+  if(age==="7+") list=list.filter(t=>/7|8\+|9\+/.test(t.age||""));
   return list;
 }
 function spark(hist, w=72, h=28){
@@ -322,6 +345,17 @@ function priceChange(t){
   const pct=first? Math.round(delta/first*100) : 0;
   return {delta, pct, low:Math.min(...h), high:Math.max(...h)};
 }
+function storePrices(t){
+  return t.shops.map((s,i)=>{
+    const bump = s.ok ? ((s.n.length + i) % 5) - 2 : 0;
+    return {...s, price: s.ok ? Math.max(1, t.price + bump) : null};
+  });
+}
+function cheapest(t){
+  const priced = storePrices(t).filter(s=>s.ok && s.price);
+  if(!priced.length) return null;
+  return priced.reduce((a,b)=>a.price<b.price?a:b);
+}
 function renderRadar(){
   const list=visibleToys();
   document.getElementById("grid").innerHTML=list.map(t=>{
@@ -332,6 +366,7 @@ function renderRadar(){
       <div>
         <div class="row"><div><h3 class="name">${t.name}</h3><p class="sub">${t.brand}</p></div><span class="badge ${b}">${t.call}</span></div>
         <div class="row" style="margin-top:6px"><span class="price">$${t.price}</span><span class="muted" style="font-size:12px">${(()=>{const c=priceChange(t); return (c.delta>0?"+":"")+c.delta+" ("+c.pct+"%)";})()}</span>${spark(t.hist)}</div>
+        <div class="muted" style="font-size:12px;margin-top:4px">${(()=>{const c=cheapest(t); return c?"Cheapest in stock: "+c.n+" · $"+c.price:"No in-stock price";})()}</div>
         <p class="why">${t.velocity}</p>
         <div class="shops">${t.shops.map(s=>`<span class="shop ${s.ok?"":"out"}">${s.n}${s.ok?"":" · out"}</span>`).join("")}${claimed?`<span class="shop">Claimed by ${claimed}</span>`:""}</div>
       </div>
@@ -353,7 +388,8 @@ function openToy(id){
     <p class="muted">7-day low $${priceChange(t).low} · high $${priceChange(t).high} · change ${priceChange(t).delta>0?"+":""}${priceChange(t).delta} (${priceChange(t).pct}%)</p>
     <p class="why">${t.why}</p>
     <p class="muted"><b style="color:var(--ink)">Velocity.</b> ${t.velocity}</p>
-    <div class="shops">${t.shops.map(s=>`<span class="shop ${s.ok?"":"out"}">${s.n}${s.ok?" · in stock":" · out"}</span>`).join("")}</div>
+    <p class="muted" style="margin-top:8px"><b style="color:var(--ink)">Compare</b> ${(()=>{const c=cheapest(t); return c?"Cheapest: "+c.n+" at $"+c.price:"None in stock";})()}</p>
+    <div class="shops">${storePrices(t).map(s=>`<span class="shop ${s.ok?"":"out"}" onclick="trackClick('${t.id}','${s.n}')">${s.n}${s.ok?" · $"+s.price:" · out"}</span>`).join("")}</div>
     <p class="muted" style="margin-top:12px"><b style="color:var(--ink)">Price by store</b></p>
     <div class="shops">${t.shops.map(s=>`<span class="shop ${s.ok?"":"out"}">${s.n} · $${s.ok ? t.price : "—"}</span>`).join("")}</div>
     <p class="muted" style="margin-top:10px"><b style="color:var(--ink)">Also check online</b></p>
@@ -363,6 +399,7 @@ function openToy(id){
       <button class="btn btn-hot" onclick="addToActive('${t.id}')">Add to active list</button>
       <button class="btn btn-copper" onclick="claim('${t.id}')">${claimed?"Claimed by "+claimed:"Claim this gift"}</button>
       <button class="btn btn-ghost" onclick="setDrop('${t.id}')">${drops[t.id]?"Drop alert at $"+drops[t.id]:"Set price-drop alert"}</button>
+      <button class="btn btn-ghost" onclick="setRestock('${t.id}')">${restocks[t.id]?"Restock watch: "+restocks[t.id]:"Watch for restock"}</button>
       <button class="btn btn-ghost" onclick="shareClaim('${t.id}')">Copy claim link</button>
     </div>`;
   document.getElementById("drawer").classList.add("on");
@@ -460,6 +497,57 @@ function renderDash(){
     <div class="box"><div class="kicker">Season Pass</div><h2>$24</h2><p class="muted">SMS, lists, history. Upsell sits on every alert.</p></div>
   `+rows.sort((a,b)=>b.rev-a.rev).slice(0,6).map(t=>`<div class="box"><strong>${t.name}</strong><div class="muted">${t.clicks.toLocaleString()} clicks · ${t.orders} orders</div><div class="price" style="margin-top:6px">$${t.rev}</div></div>`).join("");
 }
+function setRestock(id){
+  const t=toys.find(x=>x.id===id);
+  const stores=t.shops.map(s=>s.n).join(", ");
+  const which=prompt("Alert when back in stock at (store name, or Any):", restocks[id]||"Any");
+  if(which===null) return;
+  if(!which.trim()){ delete restocks[id]; toast("Restock watch cleared"); }
+  else { restocks[id]=which.trim(); notify("Restock watch", t.name+" at "+which.trim()); }
+  save(); openToy(id);
+}
+function checkRestocks(){
+  const hit=Object.entries(restocks).filter(([id,store])=>{
+    const t=toys.find(x=>x.id===id);
+    if(!t) return false;
+    return t.shops.some(s=>s.ok && (store==="Any" || s.n.toLowerCase().includes(store.toLowerCase())));
+  });
+  if(hit.length) notify("Back in stock", hit.map(([id])=>toys.find(t=>t.id===id).name).join(", "));
+}
+function shareList(){
+  const L=lists.find(l=>l.id===activeList);
+  if(!L){toast("No list");return}
+  const payload=encodeURIComponent(JSON.stringify({name:L.name,items:L.items}));
+  const url=location.origin+location.pathname+"?list="+payload;
+  navigator.clipboard?.writeText(url).then(()=>toast("List link copied")).catch(()=>toast(url));
+}
+function exportList(){
+  const L=lists.find(l=>l.id===activeList);
+  if(!L){toast("No list");return}
+  const items=L.items.map(id=>toys.find(t=>t.id===id)).filter(Boolean);
+  const html=`<html><head><title>${L.name}</title><style>body{font-family:sans-serif;padding:24px}h1{font-size:22px}li{margin:8px 0}</style></head><body><h1>${L.name}</h1><p>ShelfSignal list</p><ul>${items.map(t=>`<li>${t.name} — $${t.price} · ${t.call}</li>`).join("")}</ul></body></html>`;
+  const w=window.open("","_blank");
+  if(w){ w.document.write(html); w.document.close(); w.print(); }
+  else toast("Allow pop-ups to export");
+}
+function toggleTheme(){
+  document.body.classList.toggle("light");
+  const on=document.body.classList.contains("light");
+  localStorage.setItem("ss-theme", on?"light":"dark");
+  document.getElementById("themeBtn").textContent=on?"Dark":"Light";
+}
+let deferredPrompt=null;
+window.addEventListener("beforeinstallprompt", e=>{ e.preventDefault(); deferredPrompt=e; const b=document.getElementById("installBtn"); if(b) b.style.display=""; });
+function installPWA(){
+  if(!deferredPrompt){ toast("Install not available in this browser"); return; }
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(()=>{ deferredPrompt=null; document.getElementById("installBtn").style.display="none"; });
+}
+function trackClick(id, store){
+  clicks[id]=(clicks[id]||0)+1;
+  save();
+  toast("Tracked click · "+store);
+}
 function setDrop(id){
   const t=toys.find(x=>x.id===id);
   const current=drops[id]||Math.max(1, t.price-5);
@@ -477,6 +565,12 @@ function checkDrops(){
   });
   if(hit.length){
     const names=hit.map(([id])=>toys.find(t=>t.id===id).name).join(", ");
+    hit.forEach(([id,target])=>{
+      const t=toys.find(x=>x.id===id);
+      dropLog.unshift({id, name:t.name, price:t.price, target, at:new Date().toLocaleDateString()});
+    });
+    dropLog=dropLog.slice(0,30);
+    save();
     notify("Price drop", names);
   }
 }
@@ -495,6 +589,10 @@ function openAlert(){
     <div style="margin-top:16px">
       <div class="kicker">Price-drop alerts</div>
       <div id="dropList" style="margin-top:8px">${Object.keys(drops).length ? Object.entries(drops).map(([id,target])=>{const t=toys.find(x=>x.id===id); return t?`<div class="list-item"><div>${t.name}<div class="muted">Alert at $${target} · now $${t.price}</div></div><button class="btn btn-ghost" onclick="delete drops['${id}'];save();openAlert()">Clear</button></div>`:""}).join("") : "<p class='muted'>None yet. Open a toy and set a target price.</p>"}</div>
+      <div class="kicker" style="margin-top:14px">Drop history</div>
+      <div style="margin-top:8px">${dropLog.length?dropLog.slice(0,8).map(e=>`<div class="list-item"><div>${e.name}<div class="muted">Hit $${e.price} (target $${e.target}) · ${e.at}</div></div></div>`).join(""):"<p class='muted'>No drops recorded yet.</p>"}</div>
+      <div class="kicker" style="margin-top:14px">Restock watches</div>
+      <div style="margin-top:8px">${Object.keys(restocks).length?Object.entries(restocks).map(([id,store])=>{const t=toys.find(x=>x.id===id); return t?`<div class="list-item"><div>${t.name}<div class="muted">${store}</div></div><button class="btn btn-ghost" onclick="delete restocks['${id}'];save();openAlert()">Clear</button></div>`:""}).join(""):"<p class='muted'>None yet.</p>"}</div>
     </div>`;
   document.getElementById("drawer").classList.add("on");
   document.getElementById("back").classList.add("on");
@@ -531,7 +629,18 @@ function renderHistory(){
     <div class="muted">Low $${t.c.low} · High $${t.c.high} · ${t.c.delta>0?"+":""}${t.c.delta} (${t.c.pct}%) over 7 days</div>
   </div>`).join("");
 }
-renderRadar(); renderLists(); renderCal(); renderHistory(); renderDash(); checkLocal(); checkDrops(); countdown(); setInterval(countdown,1000);
+if(localStorage.getItem("ss-theme")==="light"){ document.body.classList.add("light"); document.getElementById("themeBtn").textContent="Dark"; }
+const params=new URLSearchParams(location.search);
+if(params.get("list")){
+  try{
+    const data=JSON.parse(decodeURIComponent(params.get("list")));
+    const id="shared-"+Date.now();
+    lists.push({id, name:data.name||"Shared list", items:data.items||[]});
+    activeList=id; save();
+    document.querySelector('[data-v="lists"]').click();
+  }catch(e){}
+}
+renderRadar(); renderLists(); renderCal(); renderHistory(); renderDash(); checkLocal(); checkDrops(); checkRestocks(); countdown(); setInterval(countdown,1000);
 </script>
 </body>
 </html>

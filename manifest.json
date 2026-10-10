@@ -1,0 +1,9 @@
+{
+  "name": "ShelfSignal",
+  "short_name": "ShelfSignal",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#10120f",
+  "theme_color": "#10120f",
+  "description": "Holiday toy stock and price radar"
+}
