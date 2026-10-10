@@ -98,7 +98,8 @@ input,select{background:#10130e;color:var(--ink);border:1px solid var(--line);bo
         <div class="ticks" id="ticks"></div>
       </aside>
     </div>
-    <div class="toolbar">
+    <div class="toolbar" style="align-items:center">
+      <input id="search" placeholder="Search toys or brands…" oninput="renderRadar()" style="max-width:280px;flex:1" />
       <button class="chip on" data-f="all">All</button>
       <button class="chip" data-f="hot">Buy now</button>
       <button class="chip" data-f="wait">Wait</button>
@@ -265,6 +266,8 @@ function save(){localStorage.setItem("ss-lists",JSON.stringify(lists));localStor
 
 function visibleToys(){
   let list = toys.filter(t => mode==="year" ? yearRound.includes(t.id) : true);
+  const q = (document.getElementById("search")?.value || "").trim().toLowerCase();
+  if(q) list = list.filter(t => (t.name+" "+t.brand+" "+t.tag).toLowerCase().includes(q));
   if(filter==="hot") list=list.filter(t=>t.status==="hot");
   if(filter==="wait") list=list.filter(t=>t.status==="wait");
   if(filter==="under") list=list.filter(t=>t.price<35);
@@ -301,8 +304,10 @@ function openToy(id){
     <p class="why">${t.why}</p>
     <p class="muted"><b style="color:var(--ink)">Velocity.</b> ${t.velocity}</p>
     <div class="shops">${t.shops.map(s=>`<span class="shop ${s.ok?"":"out"}">${s.n}${s.ok?" · in stock":" · out"}</span>`).join("")}</div>
+    <p class="muted" style="margin-top:12px"><b style="color:var(--ink)">Price by store</b></p>
+    <div class="shops">${t.shops.map(s=>`<span class="shop ${s.ok?"":"out"}">${s.n} · $${s.ok ? t.price : "—"}</span>`).join("")}</div>
     <p class="muted" style="margin-top:10px"><b style="color:var(--ink)">Also check online</b></p>
-    <div class="shops">${["Amazon","Walmart","Target","Best Buy","Kohl's","GameStop","Toys R Us","eBay","Costco","Sam's Club","Disney Store","LEGO.com","Pokémon Center"].filter(n=>!t.shops.some(s=>s.n===n)).slice(0,6).map(n=>`<span class="shop">${n}</span>`).join("")}</div>
+    <div class="shops">${["Amazon","Walmart","Target","Best Buy","Kohl's","GameStop","Toys R Us","eBay","Costco","Sam's Club","Disney Store","LEGO.com","Pokémon Center"].filter(n=>!t.shops.some(s=>s.n===n)).slice(0,6).map(n=>`<span class="shop">${n} · $${t.price}</span>`).join("")}</div>
     ${alts.length?`<p class="muted" style="margin-top:14px"><b style="color:var(--ink)">If it’s gone.</b></p><div class="shops">${alts.map(a=>`<span class="shop" onclick="openToy('${a.id}')" style="cursor:pointer">${a.name} · $${a.price}</span>`).join("")}</div>`:""}
     <div class="form" style="margin-top:14px">
       <button class="btn btn-hot" onclick="addToActive('${t.id}')">Add to active list</button>
@@ -376,7 +381,7 @@ function checkLocal(){
   }
   document.getElementById("localBody").innerHTML=`<p class="muted" style="margin-bottom:10px">${stores.length} stores within ${radius} miles of ${zip}</p>`+stores.map((s,i)=>`<div class="box"><div class="row"><strong>${s.name}</strong><span class="muted">${s.dist} mi</span></div>${hot.map((t,j)=>{
     const inStock=((i+j+Math.floor(s.dist))%3)!==0;
-    return `<div class="list-item"><div>${t.name}</div><span class="badge ${inStock?"b-ok":"b-hot"}">${inStock?"In stock · aisle "+(12+j):"Out"}</span></div>`;
+    return `<div class="list-item"><div>${t.name} <span class="muted">$${t.price}</span></div><span class="badge ${inStock?"b-ok":"b-hot"}">${inStock?"In stock · aisle "+(12+j):"Out"}</span></div>`;
   }).join("")}</div>`).join("");
 }
 function renderCal(){
