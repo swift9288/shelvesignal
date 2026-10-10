@@ -38,6 +38,7 @@ body.light .b-hot{background:rgba(229,57,53,.12);color:#9b1c2e}
 body.light .b-ok{background:rgba(67,160,71,.12);color:#145c34}
 body.light .b-wait{background:rgba(184,134,11,.15);color:#7a5a08}
 body.light .toast{background:#1a0a0c;color:#fff8f0}
+body.light .drawer{background:#fffaf3;color:#1a0a0c}
 body.light .chip,body.light .tab{color:var(--muted)}
 body.light .chip.on,body.light .tab.on{color:#fff}
 body.light .name{color:var(--ink)}
@@ -101,7 +102,7 @@ input,select{background:#1f0c10;color:var(--ink);border:1px solid var(--line);bo
 .form{display:grid;gap:8px}
 .list-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--line);gap:10px}
 .drawer-back{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;z-index:30}.drawer-back.on{display:block}
-.drawer{position:fixed;top:0;right:0;height:100%;width:min(420px,100%);background:#161913;border-left:1px solid var(--line);z-index:31;transform:translateX(100%);transition:.25s;padding:18px;overflow:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(420px,100%);background:#5a2a32;border-left:1px solid var(--line);z-index:31;transform:translateX(100%);transition:.25s;padding:18px;overflow:auto;color:#fff8f0}
 .drawer.on{transform:none}
 .toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--ink);color:#16140f;padding:11px 14px;border-radius:999px;font-weight:560;opacity:0;pointer-events:none;transition:.2s;z-index:40}
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
