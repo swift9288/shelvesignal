@@ -8,15 +8,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,620&family=Outfit:wght@340;420;520;600&display=swap" rel="stylesheet" />
 <style>
 :root{
-  --bg:#1a0a0c;
-  --card:#2a1216;
+  --bg:#3d1a1f;
+  --card:#4a252c;
   --line:rgba(255,245,230,.14);
   --ink:#fff8f0;
   --muted:#e8d5c4;
   --dim:#b89a8a;
   --copper:#d4af37;
-  --hot:#c41e3a;
-  --ok:#1e7a46;
+  --hot:#e53935;
+  --ok:#43a047;
   --wait:#f5d76e;
   --gold:#ffd700;
   --radius:18px;
@@ -24,18 +24,18 @@
 body.light{
   --bg:#fdf6f0;
   --card:#fff;
-  --line:rgba(196,30,58,.15);
+  --line:rgba(229,57,53,.15);
   --ink:#1a0a0c;
   --muted:#5c4033;
   --dim:#8a6a5a;
   --copper:#b8860b;
-  --hot:#c41e3a;
-  --ok:#1e7a46;
+  --hot:#e53935;
+  --ok:#43a047;
 }
-body.light .tick,body.light input,body.light select{background:#fff;color:var(--ink);border-color:rgba(196,30,58,.2)}
+body.light .tick,body.light input,body.light select{background:#fff;color:var(--ink);border-color:rgba(229,57,53,.2)}
 body.light header.top{background:rgba(253,246,240,.92)}
-body.light .b-hot{background:rgba(196,30,58,.12);color:#9b1c2e}
-body.light .b-ok{background:rgba(30,122,70,.12);color:#145c34}
+body.light .b-hot{background:rgba(229,57,53,.12);color:#9b1c2e}
+body.light .b-ok{background:rgba(67,160,71,.12);color:#145c34}
 body.light .b-wait{background:rgba(184,134,11,.15);color:#7a5a08}
 body.light .toast{background:#1a0a0c;color:#fff8f0}
 body.light .chip,body.light .tab{color:var(--muted)}
@@ -46,8 +46,8 @@ body.light .tick b{color:var(--ink)}
 body.light body::before,body.light::before{opacity:.15}
 *{box-sizing:border-box}html,body{margin:0;padding:0}
 body{font-family:Outfit,sans-serif;background:
-  radial-gradient(900px 500px at 100% 0%,rgba(196,30,58,.35),transparent 50%),
-  radial-gradient(700px 400px at 0% 20%,rgba(30,122,70,.28),transparent 50%),
+  radial-gradient(900px 500px at 100% 0%,rgba(229,57,53,.35),transparent 50%),
+  radial-gradient(700px 400px at 0% 20%,rgba(67,160,71,.28),transparent 50%),
   radial-gradient(600px 350px at 50% 100%,rgba(212,175,55,.12),transparent 55%),
   var(--bg);
   color:var(--ink);min-height:100vh;position:relative}
@@ -64,11 +64,11 @@ button,input,select{font-family:inherit}a{color:inherit;text-decoration:none}
 header.top{position:sticky;top:0;z-index:20;backdrop-filter:blur(16px);background:rgba(26,10,12,.9);border-bottom:1px solid var(--line);color:var(--ink)}
 .top-inner{display:flex;align-items:center;justify-content:space-between;height:64px;gap:12px}
 .brand{display:flex;align-items:center;gap:10px}
-.mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(160deg,#c41e3a,#d4af37);display:grid;place-items:center;box-shadow:0 0 0 2px rgba(240,215,140,.25)}
+.mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(160deg,#e53935,#d4af37);display:grid;place-items:center;box-shadow:0 0 0 2px rgba(240,215,140,.25)}
 .brand strong{font-family:Fraunces,serif;font-weight:620;font-size:20px}
 .tabs{display:flex;gap:6px;overflow:auto;padding:0 0 0 8px}
 .tab{background:transparent;color:var(--muted);border:0;padding:8px 10px;border-radius:999px;cursor:pointer;font-size:13px;white-space:nowrap}
-.tab.on{background:linear-gradient(160deg,#c41e3a,#d4af37);color:#fffaf3}
+.tab.on{background:linear-gradient(160deg,#e53935,#d4af37);color:#fffaf3}
 .btn{border:0;cursor:pointer;border-radius:999px;padding:10px 14px;font-weight:560;font-size:14px}
 .btn-copper{background:var(--copper);color:#1a1208}.btn-hot{background:var(--hot);color:#fff}.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
 .view{display:none;padding:22px 0 48px}.view.on{display:block}
@@ -83,15 +83,15 @@ h2{font-family:Fraunces,serif;font-weight:520;letter-spacing:-.03em;font-size:28
 .tick{background:#1f0c10;border:1px solid rgba(212,175,55,.2);border-radius:12px;padding:8px 4px;text-align:center}.tick b{font-family:Fraunces,serif;font-size:22px}.tick span{color:var(--dim);font-size:10px;text-transform:uppercase}
 .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}
 .chip{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:7px 11px;cursor:pointer;font-size:13px}
-.chip.on{background:linear-gradient(160deg,#c41e3a,#d4af37);color:#fffaf3}
+.chip.on{background:linear-gradient(160deg,#e53935,#d4af37);color:#fffaf3}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;display:grid;grid-template-columns:64px 1fr;gap:12px;cursor:pointer}
-.card:hover{border-color:rgba(212,175,55,.7);box-shadow:0 4px 18px rgba(196,30,58,.18)}
+.card:hover{border-color:rgba(212,175,55,.7);box-shadow:0 4px 18px rgba(229,57,53,.18)}
 .swatch{width:64px;height:64px;border-radius:14px;overflow:hidden;background:#111;display:grid;place-items:center}
 .swatch img{width:100%;height:100%;object-fit:cover;display:block}
 .name{font-weight:580;margin:0 0 2px;font-size:15px}.sub{color:var(--muted);font-size:12px;margin:0}
 .badge{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:3px 7px}
-.b-hot{background:rgba(196,30,58,.25);color:#ffd6d6}.b-ok{background:rgba(30,122,70,.25);color:#c8f0d8}.b-wait{background:rgba(212,175,55,.25);color:#fff4c0}
+.b-hot{background:rgba(229,57,53,.25);color:#ffd6d6}.b-ok{background:rgba(67,160,71,.25);color:#c8f0d8}.b-wait{background:rgba(212,175,55,.25);color:#fff4c0}
 .price{font-family:Fraunces,serif;font-size:22px}.why{color:var(--muted);font-size:13px;margin:6px 0 0;line-height:1.4}
 .shops{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.shop{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:4px 7px}
 .shop.out{color:var(--dim);text-decoration:line-through}
