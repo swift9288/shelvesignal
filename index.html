@@ -211,67 +211,67 @@ input,select{background:#10130e;color:var(--ink);border:1px solid var(--line);bo
 
 <script>
 const toys = [
-  {id:"rumi",name:"Rumi “Golden” singing doll",brand:"Mattel · KPop Demon Hunters",price:32,was:35,status:"hot",call:"Buy now",score:92,tag:"Franchise",hue:"#e2a15a",letter:"R",kidult:false,age:"4+",
+  {id:"rumi",sku:"MAT-KPDH-RUMI-GLD",name:"Rumi “Golden” singing doll",brand:"Mattel · KPop Demon Hunters",price:32,was:35,status:"hot",call:"Buy now",score:92,tag:"Franchise",hue:"#e2a15a",letter:"R",kidult:false,age:"4+",
     why:"Editors’ early favorite. Sings the solo. Preorder velocity is the tell.",
     shops:[{n:"Target",ok:true},{n:"Walmart",ok:false},{n:"Amazon",ok:true}],
     hist:[38,36,35,34,33,32,32],velocity:"Last 2 restocks lasted under 20 min",alt:["gabby","jelly"],clicks:4200,orders:380},
-  {id:"elmo",name:"Tickle Me Elmo Giggle Max",brand:"Sesame · 30th anniversary",price:45,was:50,status:"hot",call:"Buy now",score:88,tag:"Nostalgia",hue:"#ef5b3a",letter:"E",kidult:false,age:"18m+",
+  {id:"elmo",sku:"HAS-ELMO-GMAX-30",name:"Tickle Me Elmo Giggle Max",brand:"Sesame · 30th anniversary",price:45,was:50,status:"hot",call:"Buy now",score:88,tag:"Nostalgia",hue:"#ef5b3a",letter:"E",kidult:false,age:"18m+",
     why:"Anniversary reboot. Preschool gifts like this vanish the week of Thanksgiving.",
     shops:[{n:"Walmart",ok:true},{n:"Target",ok:true},{n:"Amazon",ok:false}],
     hist:[50,49,48,47,46,45,45],velocity:"Usually back within 36 hours, then gone",alt:["gabby","skye"],clicks:3100,orders:240},
-  {id:"mega",name:"Primal Hatch Megalodon",brand:"Spin Master · hatching egg",price:28,was:30,status:"hot",call:"Buy now",score:86,tag:"Viral",hue:"#7eb0d4",letter:"M",kidult:false,age:"5+",
+  {id:"mega",sku:"SM-PRIMAL-MEGA-EGG",name:"Primal Hatch Megalodon",brand:"Spin Master · hatching egg",price:28,was:30,status:"hot",call:"Buy now",score:86,tag:"Viral",hue:"#7eb0d4",letter:"M",kidult:false,age:"5+",
     why:"Add water, it fizzes, a shark hatches. Surprise toys with a video hook sell through first.",
     shops:[{n:"Target",ok:true},{n:"Amazon",ok:true},{n:"Walmart",ok:true}],
     hist:[32,31,30,29,28,28,28],velocity:"Restocks last ~11 minutes on video days",alt:["slime","jelly"],clicks:2800,orders:310},
-  {id:"pika",name:"Pikachu Puppetronic",brand:"Jazwares · RealFX",price:55,was:60,status:"hot",call:"Buy now",score:84,tag:"Screen-free",hue:"#e6c85a",letter:"P",kidult:true,age:"6+",
+  {id:"pika",sku:"JAZ-PIKA-PUPPET-FX",name:"Pikachu Puppetronic",brand:"Jazwares · RealFX",price:55,was:60,status:"hot",call:"Buy now",score:84,tag:"Screen-free",hue:"#e6c85a",letter:"P",kidult:true,age:"6+",
     why:"Hand-puppet animatronic. Moving fast around the franchise’s 30th year.",
     shops:[{n:"Amazon",ok:true},{n:"GameStop",ok:false},{n:"Target",ok:true}],
     hist:[60,58,56,55,55,55,55],velocity:"Preorder queue, limited street stock",alt:["etb","lego"],clicks:1900,orders:140},
-  {id:"gabby",name:"Gabby the Grow & Roar",brand:"furReal · Just Play",price:70,was:80,status:"hot",call:"Buy soon",score:80,tag:"Interactive pet",hue:"#d98a4a",letter:"G",kidult:false,age:"4+",
+  {id:"gabby",sku:"JP-FUR-GABBY-GROW",name:"Gabby the Grow & Roar",brand:"furReal · Just Play",price:70,was:80,status:"hot",call:"Buy soon",score:80,tag:"Interactive pet",hue:"#d98a4a",letter:"G",kidult:false,age:"4+",
     why:"Starts as a cub and grows with play.",
     shops:[{n:"Amazon",ok:true},{n:"Walmart",ok:true},{n:"Target",ok:false}],
     hist:[80,76,74,72,70,70,70],velocity:"Steady sell-through, not flash",alt:["skye","elmo"],clicks:1600,orders:95},
-  {id:"skye",name:"My Magical Dragon Skye",brand:"Little Live Pets",price:50,was:50,status:"hot",call:"Buy now",score:79,tag:"Animatronic",hue:"#8fbf6a",letter:"S",kidult:false,age:"4+",
+  {id:"skye",sku:"LLP-DRAGON-SKYE",name:"My Magical Dragon Skye",brand:"Little Live Pets",price:50,was:50,status:"hot",call:"Buy now",score:79,tag:"Animatronic",hue:"#8fbf6a",letter:"S",kidult:false,age:"4+",
     why:"60+ reactions. Already selling through at some retailers.",
     shops:[{n:"Target",ok:false},{n:"Walmart",ok:true},{n:"Amazon",ok:true}],
     hist:[50,50,49,50,50,50,50],velocity:"Target often first to zero",alt:["gabby","elmo"],clicks:1400,orders:88},
-  {id:"etb",name:"Pokémon 30th Elite Trainer Box",brand:"Pokémon TCG",price:55,was:50,status:"hot",call:"Buy now",score:90,tag:"Collectible",hue:"#f0d36a",letter:"30",kidult:true,age:"6+",
+  {id:"etb",sku:"PKM-TCG-30-ETB",name:"Pokémon 30th Elite Trainer Box",brand:"Pokémon TCG",price:55,was:50,status:"hot",call:"Buy now",score:90,tag:"Collectible",hue:"#f0d36a",letter:"30",kidult:true,age:"6+",
     why:"Anniversary cardboard. These rarely get cheaper into December.",
     shops:[{n:"Pokemon Center",ok:false},{n:"Target",ok:true},{n:"Walmart",ok:true}],
     hist:[50,52,54,55,58,55,55],velocity:"Secondary already above retail on some SKUs",alt:["pika","labubu"],clicks:5100,orders:420},
-  {id:"bluey",name:"Bluey Light & Surprise House",brand:"Moose · Heeler House",price:60,was:70,status:"wait",call:"Wait",score:61,tag:"Playset",hue:"#6aa7d8",letter:"B",kidult:false,age:"3+",
+  {id:"bluey",sku:"MOOSE-BLUEY-HOUSE",name:"Bluey Light & Surprise House",brand:"Moose · Heeler House",price:60,was:70,status:"wait",call:"Wait",score:61,tag:"Playset",hue:"#6aa7d8",letter:"B",kidult:false,age:"3+",
     why:"Evergreen, wide distribution. A real discount is likely in the toy doorbusters.",
     shops:[{n:"Walmart",ok:true},{n:"Target",ok:true},{n:"Amazon",ok:true}],
     hist:[70,66,64,62,60,60,60],velocity:"Always findable; wait for ~20% off",alt:["paw","chomp"],clicks:900,orders:40},
-  {id:"paw",name:"PAW Patrol Megasaurus",brand:"Spin Master · Dino Movie",price:48,was:55,status:"wait",call:"Wait",score:58,tag:"Playset",hue:"#ef7a4a",letter:"D",kidult:false,age:"3+",
+  {id:"paw",sku:"SM-PAW-MEGASAURUS",name:"PAW Patrol Megasaurus",brand:"Spin Master · Dino Movie",price:48,was:55,status:"wait",call:"Wait",score:58,tag:"Playset",hue:"#ef7a4a",letter:"D",kidult:false,age:"3+",
     why:"Fun, widely stocked. Not scarce enough to pay full price in October.",
     shops:[{n:"Target",ok:true},{n:"Walmart",ok:true},{n:"Amazon",ok:true}],
     hist:[55,52,50,49,48,48,48],velocity:"Healthy stock across doors",alt:["bluey","mega"],clicks:700,orders:32},
-  {id:"slime",name:"Gui Gui Mega Slime Haul",brand:"Sensory · 50 pieces",price:30,was:30,status:"ok",call:"Either",score:66,tag:"Sensory",hue:"#c58bd0",letter:"Sl",kidult:false,age:"6+",
+  {id:"slime",sku:"GUI-MEGA-SLIME-50",name:"Gui Gui Mega Slime Haul",brand:"Sensory · 50 pieces",price:30,was:30,status:"ok",call:"Either",score:66,tag:"Sensory",hue:"#c58bd0",letter:"Sl",kidult:false,age:"6+",
     why:"Easy to restock. Waiting costs little.",
     shops:[{n:"Amazon",ok:true},{n:"Walmart",ok:true},{n:"Target",ok:true}],
     hist:[30,28,30,29,30,30,30],velocity:"Restocks weekly",alt:["needoh","jelly"],clicks:600,orders:55},
-  {id:"record",name:"Miniverse record player",brand:"MGA · tiny vinyl",price:25,was:25,status:"wait",call:"Wait",score:57,tag:"Kidult",hue:"#d8c3a5",letter:"♪",kidult:true,age:"8+",
+  {id:"record",sku:"MGA-MINI-RECORD",name:"Miniverse record player",brand:"MGA · tiny vinyl",price:25,was:25,status:"wait",call:"Wait",score:57,tag:"Kidult",hue:"#d8c3a5",letter:"♪",kidult:true,age:"8+",
     why:"Parent takeover gift. Better as a sale stocking add-on.",
     shops:[{n:"Target",ok:true},{n:"Amazon",ok:true},{n:"Walmart",ok:false}],
     hist:[25,25,24,25,25,25,25],velocity:"Not capacity constrained",alt:["lego","labubu"],clicks:400,orders:22},
-  {id:"lego",name:"LEGO Star Wars SMART Play",brand:"Throne Room Duel",price:130,was:150,status:"wait",call:"Wait",score:54,tag:"Build",hue:"#e8e2d4",letter:"L",kidult:true,age:"9+",
+  {id:"lego",sku:"LEGO-SW-SMART-THRONE",name:"LEGO Star Wars SMART Play",brand:"Throne Room Duel",price:130,was:150,status:"wait",call:"Wait",score:54,tag:"Build",hue:"#e8e2d4",letter:"L",kidult:true,age:"9+",
     why:"Kidult LEGO discounts reliably around Black Friday.",
     shops:[{n:"LEGO",ok:true},{n:"Target",ok:true},{n:"Amazon",ok:true}],
     hist:[150,140,135,130,130,130,130],velocity:"Wide; wait unless exclusive mold",alt:["pika","etb"],clicks:1100,orders:48},
-  {id:"chomp",name:"ChompSaw cardboard cutter",brand:"Chompshop · Creative Toy of the Year",price:30,was:30,status:"ok",call:"Either",score:70,tag:"Make",hue:"#e2a15a",letter:"C",kidult:false,age:"6+",
+  {id:"chomp",sku:"CHOMP-SAW-CC",name:"ChompSaw cardboard cutter",brand:"Chompshop · Creative Toy of the Year",price:30,was:30,status:"ok",call:"Either",score:70,tag:"Make",hue:"#e2a15a",letter:"C",kidult:false,age:"6+",
     why:"Niche enough to watch, common enough that a week’s wait is fine.",
     shops:[{n:"Amazon",ok:true},{n:"Walmart",ok:true}],
     hist:[30,30,29,30,30,30,30],velocity:"Stable",alt:["slime","needoh"],clicks:350,orders:28},
-  {id:"needoh",name:"NeeDoh Nice Cube",brand:"Schylling · squish",price:12,was:13,status:"ok",call:"Either",score:63,tag:"Fidget",hue:"#8fbf6a",letter:"N",kidult:false,age:"3+",
+  {id:"needoh",sku:"SCH-NEEDOH-CUBE",name:"NeeDoh Nice Cube",brand:"Schylling · squish",price:12,was:13,status:"ok",call:"Either",score:63,tag:"Fidget",hue:"#8fbf6a",letter:"N",kidult:false,age:"3+",
     why:"Low stakes. Buy when you see it.",
     shops:[{n:"Target",ok:true},{n:"Walmart",ok:true},{n:"Amazon",ok:true}],
     hist:[13,12,12,12,12,12,12],velocity:"Always around",alt:["slime","jelly"],clicks:280,orders:40},
-  {id:"labubu",name:"Labubu bag charm",brand:"Pop Mart · blind box",price:28,was:28,status:"hot",call:"Buy now",score:85,tag:"Collectible",hue:"#d98aa8",letter:"La",kidult:true,age:"8+",
+  {id:"labubu",sku:"PM-LABUBU-CHARM",name:"Labubu bag charm",brand:"Pop Mart · blind box",price:28,was:28,status:"hot",call:"Buy now",score:85,tag:"Collectible",hue:"#d98aa8",letter:"La",kidult:true,age:"8+",
     why:"Retail drops vanish. Secondary is the risk if you wait.",
     shops:[{n:"Pop Mart",ok:false},{n:"Resale",ok:true}],
     hist:[28,32,40,36,34,28,28],velocity:"Drop windows measured in minutes",alt:["etb","jelly"],clicks:6400,orders:510},
-  {id:"jelly",name:"Magic Jellykins blind box",brand:"Surprise plush",price:15,was:18,status:"ok",call:"Either",score:64,tag:"Blind box",hue:"#f0a3c2",letter:"J",kidult:false,age:"5+",
+  {id:"jelly",sku:"JELLY-MAGIC-BB",name:"Magic Jellykins blind box",brand:"Surprise plush",price:15,was:18,status:"ok",call:"Either",score:64,tag:"Blind box",hue:"#f0a3c2",letter:"J",kidult:false,age:"5+",
     why:"Fine stocking gift. Don’t pay a December convenience markup.",
     shops:[{n:"Target",ok:true},{n:"Amazon",ok:true}],
     hist:[18,16,15,15,15,15,15],velocity:"Easy restock",alt:["labubu","slime"],clicks:500,orders:60}
@@ -316,7 +316,7 @@ function save(){localStorage.setItem("ss-lists",JSON.stringify(lists));localStor
 function visibleToys(){
   let list = toys.filter(t => mode==="year" ? yearRound.includes(t.id) : true);
   const q = (document.getElementById("search")?.value || "").trim().toLowerCase();
-  if(q) list = list.filter(t => (t.name+" "+t.brand+" "+t.tag).toLowerCase().includes(q));
+  if(q) list = list.filter(t => (t.name+" "+t.brand+" "+t.tag+" "+(t.sku||"")).toLowerCase().includes(q));
   if(filter==="hot") list=list.filter(t=>t.status==="hot");
   if(filter==="wait") list=list.filter(t=>t.status==="wait");
   if(filter==="under") list=list.filter(t=>t.price<35);
@@ -364,7 +364,7 @@ function renderRadar(){
     return `<article class="card" onclick="openToy('${t.id}')">
       <div class="swatch" style="background:${t.hue}">${t.letter}</div>
       <div>
-        <div class="row"><div><h3 class="name">${t.name}</h3><p class="sub">${t.brand}</p></div><span class="badge ${b}">${t.call}</span></div>
+        <div class="row"><div><h3 class="name">${t.name}</h3><p class="sub">${t.brand}</p><p class="sub" style="font-size:11px;letter-spacing:.04em">SKU ${t.sku||"—"}</p></div><span class="badge ${b}">${t.call}</span></div>
         <div class="row" style="margin-top:6px"><span class="price">$${t.price}</span><span class="muted" style="font-size:12px">${(()=>{const c=priceChange(t); return (c.delta>0?"+":"")+c.delta+" ("+c.pct+"%)";})()}</span>${spark(t.hist)}</div>
         <div class="muted" style="font-size:12px;margin-top:4px">${(()=>{const c=cheapest(t); return c?"Cheapest in stock: "+c.n+" · $"+c.price:"No in-stock price";})()}</div>
         <p class="why">${t.velocity}</p>
@@ -383,6 +383,7 @@ function openToy(id){
     <div class="row"><div class="kicker">${t.tag} · ${t.age}</div><button class="btn btn-ghost" onclick="closeDrawer()">Close</button></div>
     <h2>${t.name}</h2>
     <p class="muted">${t.brand}</p>
+    <p class="muted" style="font-size:12px;letter-spacing:.06em">SKU ${t.sku||"—"}</p>
     <div class="row"><span class="price">$${t.price}</span><span class="badge ${t.status==="hot"?"b-hot":t.status==="wait"?"b-wait":"b-ok"}">${t.call}</span></div>
     <div style="margin:10px 0">${spark(t.hist, 320, 64)}</div>
     <p class="muted">7-day low $${priceChange(t).low} · high $${priceChange(t).high} · change ${priceChange(t).delta>0?"+":""}${priceChange(t).delta} (${priceChange(t).pct}%)</p>
